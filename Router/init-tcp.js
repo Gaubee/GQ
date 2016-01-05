@@ -16,8 +16,6 @@ function bridgeHttp(http_app, waterline_instance) {
 		var events = {
 			"router-register": function(data, done) {
 				waterline_instance.collections.router_register.create(data.info).then(router_register => {
-					console.log(router_register.populate("doc"))
-					console.log(router_register.toObject.toString())
 					http_app.use(router[router_register.method](router_register.path, function() {
 						socket.msg()
 					}));
