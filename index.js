@@ -10,8 +10,8 @@ Fiber(function() {
 
 		//运行测试
 		require("./test/test_app").run();
-		setTimeout(function() {
-			process.exit()
-		}, 1500);
+		// setTimeout(function() {
+		// 	process.exit()
+		// }, 1500);
 	});
 }).run();
