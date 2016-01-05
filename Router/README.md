@@ -12,14 +12,16 @@
 {
 	type: "router-init",
 	info:{
-		author: "Gaubee",
-		version: "1.0.0"
-	},
-	address:{
-		host: "0.0.0.0",
-		port: 1234
-	},
-	initKey:"**HASH**"
+		info:{
+			author: "Gaubee",
+			version: "1.0.0"
+		},
+		address:{
+			host: "0.0.0.0",
+			port: 1234
+		},
+		initKey:"**HASH**"
+	}
 }
 // Server -> Client
 {
@@ -77,28 +79,34 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 //Server -> Client
 {
 	type: "emit-task",
-	path: "/blogs/list",
-	method: "GET",
-	task_id: "**HASH**",
-	time_out: 30*1000, // 单位是毫秒
-	emit_with: [{num:10}]
+	info:{
+		path: "/blogs/list",
+		method: "GET",
+		task_id: "**HASH**",
+		time_out: 30*1000, // 单位是毫秒
+		emit_with: [{num:10}]
+	}
 }
 ```
 在应用中接受到响应路由的指令后，通过path、method判断出要使用哪一个方法进行处理。处理完成后根据这个task_id进行返回或者取params、query、body等操作。如果认为这一步是多余的，可以在emit_with中加入想要直接取到的数据。避免TCP数据传输所带来的多余的损耗。
 ```js
 // Client -> Server
 {
-	require_id: "**HASH**", //因为可能会同时存在多个get-task-data请求，所以需要带上一个require_id来做请求区分
 	type: "get-task-data",
-	task_id: "**HASH**",
-	data_list: ["query.num"]
+	info:{
+		require_id: "**HASH**", //因为可能会同时存在多个get-task-data请求，所以需要带上一个require_id来做请求区分
+		task_id: "**HASH**",
+		data_list: ["query.num"]
+	}
 }
 //Server -> Client
 {
-	require_id: "**HASH**",
 	type: "return-task-data",
-	task_id: "**HASH**",
-	data_list: [10]
+	info:{
+		require_id: "**HASH**",
+		task_id: "**HASH**",
+		data_list: [10]
+	}
 }
 ```
 在应用处理完数据，则返回结果
@@ -106,12 +114,14 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 // Client -> Server
 {
 	type:"return-task",
-	task_id: "**HASH**",
-	return_data:{ // 这里遵循HTTP协议的规则
-		state: 200,
-		set_cookies: ["type=ninja", "language=javascript"],
-		response_type: "text/html;utf-8",
-		body: "**String**"
+	info:{
+		task_id: "**HASH**",
+		return_data:{ // 这里遵循HTTP协议的规则
+			state: 200,
+			set_cookies: ["type=ninja", "language=javascript"],
+			response_type: "text/html;utf-8",
+			body: "**String**"
+		}
 	}
 }
 ```
@@ -120,14 +130,16 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 // Client -> Server
 {
 	type:"return-task",
-	task_id: "**HASH**",
-	return_data:{ // 这里遵循HTTP协议的规则
-		state: 200,
-		set_cookies: ["type=ninja", "language=javascript"],
-		response_type: "text/html;utf-8",
-		body: Buffer("12") //{ type: 'Buffer', data: [ 49, 50 ] }
-	},
-	stop_end_send: true //说明这次发送不要执行 .end，等一下还有数据要写入
+	info:{
+		task_id: "**HASH**",
+		return_data:{ // 这里遵循HTTP协议的规则
+			state: 200,
+			set_cookies: ["type=ninja", "language=javascript"],
+			response_type: "text/html;utf-8",
+			body: Buffer("12") //{ type: 'Buffer', data: [ 49, 50 ] }
+		},
+		stop_end_send: true //说明这次发送不要执行 .end，等一下还有数据要写入
+	}
 }
 ```
 另外time_out代表着超时的时间数量，这里只是一个简单的数据提示，如果应用在30s-10s后还没有返回，Server端会发来提醒：
@@ -135,8 +147,10 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 //Server -> Client
 {
 	type: "task-timeout",
-	task_id: "**HASH**",
-	pased_time: 20*1000//已经等待了多久
+	info:{
+		task_id: "**HASH**",
+		pased_time: 20*1000//已经等待了多久
+	}
 }
 ```
 如果恐怕这次请求的时间要超过30s，请在剩余的10s内发送延迟请求：
@@ -144,8 +158,10 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 // Client -> Server
 {
 	type: "task-extended-timeout",
-	task_id: "**HASH**",
-	extended_timeout: 12*1000 //再拖延12秒
+	info:{
+		task_id: "**HASH**",
+		extended_timeout: 12*1000 //再拖延12秒
+	}
 }
 ```
 那么在42s-10s后服务器会继续发来将要超时的提醒。
