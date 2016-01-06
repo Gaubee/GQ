@@ -41,11 +41,11 @@ module.exports = [
 			},
 			emit_with: {
 				type: "array",
-				defaultTo: ["query", "params"]
+				defaultsTo: ["query", "params"],
 			},
 			time_out: {
 				type: "integer",
-				defaultTo: 30 * 1000
+				defaultsTo: 30 * 1000,
 			},
 		}
 	})

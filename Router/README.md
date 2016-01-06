@@ -69,7 +69,10 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 如果返回成功：
 ```js
 //Server -> Client
-{type: "router-reigster", info: "success"}
+{
+	type: "success",
+	from: "router-reigster",
+}
 ```
 则说明这个Path将会路由到你的应用上。
 
@@ -117,7 +120,7 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 	info:{
 		task_id: "**HASH**",
 		return_data:{ // 这里遵循HTTP协议的规则
-			state: 200,
+			status: 200,
 			set_cookies: ["type=ninja", "language=javascript"],
 			response_type: "text/html;utf-8",
 			body: "**String**"
@@ -133,12 +136,33 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 	info:{
 		task_id: "**HASH**",
 		return_data:{ // 这里遵循HTTP协议的规则
-			state: 200,
+			status: 200,
 			set_cookies: ["type=ninja", "language=javascript"],
 			response_type: "text/html;utf-8",
 			body: Buffer("12") //{ type: 'Buffer', data: [ 49, 50 ] }
 		},
 		stop_end_send: true //说明这次发送不要执行 .end，等一下还有数据要写入
+	}
+}
+// 如果response发送完成
+// Server -> Client
+{
+	type: "success",
+	from: "return-task",
+	info: {
+		task_id: "**HASH**"
+	}
+}
+// 如果response发送失败，或者没有收到相应超时返回
+// Server -> Client
+{
+	type: "error",
+	from: "return-task",
+	info: {
+		task_id: "**HASH**",
+		error:{
+			details: "String"
+		}
 	}
 }
 ```
@@ -149,7 +173,7 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 	type: "task-timeout",
 	info:{
 		task_id: "**HASH**",
-		pased_time: 20*1000//已经等待了多久
+		passed_time: 20*1000//已经等待了多久
 	}
 }
 ```

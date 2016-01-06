@@ -25,7 +25,6 @@ module.exports = [
 		}
 	}),
 
-
 	Waterline.Collection.extend({
 		identity: 'router_init',
 		connection: 'default',
