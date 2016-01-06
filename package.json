@@ -4,7 +4,8 @@
   "description": "深圳新能源电动汽车有限公司股权三级分销系统",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index",
+    "test": "node index --test"
   },
   "author": "Gaubee",
   "license": "ISC",

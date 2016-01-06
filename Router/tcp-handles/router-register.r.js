@@ -40,7 +40,6 @@ function install(socket, http_app, waterline_instance) {
 					ctx.router_socket = null;
 					req = null;
 					res = null;
-					console.log(ctx.body);
 				};
 
 				var emit_with = [];

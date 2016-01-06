@@ -1,3 +1,7 @@
+require("../../lib/global");
+console.log("\n-------------------------");
+console.flag("TEST", "运行测试代码");
+
 var tasks = [
 	require("./router_init_test.js"),
 	require("./router_register_test.js"),
@@ -19,6 +23,7 @@ var client = tcp.createClient({
 var _runed_tasks_map = {};
 
 function run_tasks(i) {
+	i || (i = 0);
 	// 运行锁，所有测试只运行一次
 	if (_runed_tasks_map[i]) {
 		return
@@ -26,7 +31,6 @@ function run_tasks(i) {
 	_runed_tasks_map[i] = true;
 
 	w.then(function() {
-		i || (i = 0);
 		if (i < tasks.length) {
 			console.log("\n--------------------------")
 			console.flag("run test", i + 1, "↓\n--------------------------");
@@ -37,7 +41,11 @@ function run_tasks(i) {
 			});
 		} else {
 			console.flag("test success", "所有测试运行完成");
+			process.exit(0)
 		}
 	});
 };
 module.exports.run = run_tasks;
+if (module === require.main) {
+	run_tasks(0)
+}

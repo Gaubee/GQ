@@ -45,7 +45,6 @@ exports.task_handle = task_handle;
 
 function task_handle(socket, data) {
 	var task_handle_config = exports.task_handle_config;
-	console.log(task_handle_config.time_out)
 	setTimeout(function() {
 		socket.msgInfo("return-task", {
 			task_id: data.info.task_id,
