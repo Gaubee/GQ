@@ -13,7 +13,7 @@ exports.install = install;
 
 function install(socket, http_app, waterline_instance) {
 	socket.on("close", function() {
-		console.flag("SOCKET CLOSE", "连接关闭");
+		console.flag("SOCKET CLOSE", "服务端与客户端连接关闭");
 	});
 	//注册初始化
 	socket.onMsgInfo("router-init", function(data, done) {

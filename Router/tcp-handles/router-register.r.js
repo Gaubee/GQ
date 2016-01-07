@@ -1,4 +1,4 @@
-var router = require("koa-route");
+var Router = require("koa-router");
 var tcp = require("../../lib/tcp");
 
 // 任务缓存
@@ -7,16 +7,18 @@ var tasks = exports.tasks = new Map();
 exports.install = install;
 
 function install(socket, http_app, waterline_instance) {
-	var routerMap = socket.routerMap = new Map();
+	var router = socket.router = Router();
+	var router_generation = socket.router_generation = router.routes();
+	http_app.use(router_generation);
 	// 如果关闭了,socket注册的Router要全部注销掉
 	socket.on("close", function() {
 		var _flag = console.flagHead("SOCKET CLOSE");
+
 		console.group(_flag, "注销注册路由");
-		routerMap.forEach((_router_handle, _method_and_path) => {
-			console.log(_method_and_path);
-			http_app.middleware.spliceRemove(_router_handle);
-		});
+		http_app.middleware.spliceRemove(router_generation);
+		router.stack.forEach(layer=>console.log(`[${layer.methods}]${layer.path}`));
 		console.groupEnd(_flag, "注销注册路由");
+
 		console.group(_flag, "关闭正在执行的请求");
 		tasks.forEach((ctx, task_id) => {
 			console.log(`[${ctx.method}]${ctx.path}`);
@@ -28,7 +30,7 @@ function install(socket, http_app, waterline_instance) {
 	return function(data, done) {
 		waterline_instance.collections.router_register.create(data.info).then(router_register => {
 			console.flag("SERVER", router_register);
-			var _router_handle = router[router_register.method](router_register.path, function*(next) {
+			router[router_register.method](router_register.path, function*(next) {
 				var ctx = this;
 				// 记录基础的路由配置
 				ctx.router_register = router_register.$clone();
@@ -40,8 +42,8 @@ function install(socket, http_app, waterline_instance) {
 				ctx.router_socket = socket;
 
 				var time_tasks = ctx.time_tasks = new Map();
-				var req = ctx.req;
-				var res = ctx.res;
+				var req = ctx.request;
+				var res = ctx.response;
 				// 注册销毁函数
 				ctx.destory = function() {
 					time_tasks.forEach((value, key) => {
@@ -61,18 +63,18 @@ function install(socket, http_app, waterline_instance) {
 					res = null;
 				};
 
-				var emit_with = [];
-				router_register.emit_with.forEach(function(emit_item) {
+				var emit_with = router_register.emit_with.map(function(emit_item) {
+					console.log(ctx);
 					switch (emit_item) {
 						case "query":
-							emit_with.push(req.query)
-							break;
+							return req.query;
+							// break;
 						case "params":
-							emit_with.push(ctx.params)
-							break;
+							return ctx.params;
+							// break;
 						case "form":
-							emit_with.push(req.body)
-							break;
+							return req.body;
+							// break;
 					}
 				});
 
@@ -87,12 +89,9 @@ function install(socket, http_app, waterline_instance) {
 
 				return yield with_until_time_out_FACTORY(ctx);
 			});
-			// 保存下来，在Socket断开连接的时候进行移除unuse
-			routerMap.set(`[${router_register.method}]${router_register.path}`, _router_handle);
 
-			http_app.use(_router_handle);
 			//返回完成
-			socket.msgSuccess("router-register", "success");
+			socket.msgSuccess("router-register", router_register);
 			done();
 		}).catch(err => {
 			socket.msgError("router-register", tcp.errorWrap(err), "[路由] 注册失败");

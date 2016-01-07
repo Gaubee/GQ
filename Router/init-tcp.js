@@ -2,7 +2,6 @@
  * 提供给外部的基于TCP协议的注册功能
  */
 var tcp = require("../lib/tcp");
-var router = require("koa-route");
 var server = tcp.createServer({
 	host: "0.0.0.0",
 	port: 4001
