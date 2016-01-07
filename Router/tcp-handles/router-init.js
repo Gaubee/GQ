@@ -12,6 +12,9 @@ fs.lsAll(__dirname).forEach(file_path => {
 exports.install = install;
 
 function install(socket, http_app, waterline_instance) {
+	socket.on("close", function() {
+		console.flag("SOCKET CLOSE", "连接关闭");
+	});
 	//注册初始化
 	socket.onMsgInfo("router-init", function(data, done) {
 		waterline_instance.collections.router_init.create(data.info).then(router_init => {

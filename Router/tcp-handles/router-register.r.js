@@ -8,6 +8,23 @@ exports.install = install;
 
 function install(socket, http_app, waterline_instance) {
 	var routerMap = socket.routerMap = new Map();
+	// 如果关闭了,socket注册的Router要全部注销掉
+	socket.on("close", function() {
+		var _flag = console.flagHead("SOCKET CLOSE");
+		console.group(_flag, "注销注册路由");
+		routerMap.forEach((_router_handle, _method_and_path) => {
+			console.log(_method_and_path);
+			http_app.middleware.spliceRemove(_router_handle);
+		});
+		console.groupEnd(_flag, "注销注册路由");
+		console.group(_flag, "关闭正在执行的请求");
+		tasks.forEach((ctx, task_id) => {
+			console.log(`[${ctx.method}]${ctx.path}`);
+			ctx.destory(task_id);
+		});
+		console.groupEnd(_flag, "关闭正在执行的请求");
+	});
+
 	return function(data, done) {
 		waterline_instance.collections.router_register.create(data.info).then(router_register => {
 			console.flag("SERVER", router_register);
@@ -30,6 +47,7 @@ function install(socket, http_app, waterline_instance) {
 					time_tasks.forEach((value, key) => {
 						console.log("clearTimeout:", key)
 						clearTimeout(value);
+						time_tasks.delete(key);
 					});
 					time_tasks.clear();
 					time_tasks.done();
