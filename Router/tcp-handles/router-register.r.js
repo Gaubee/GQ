@@ -7,10 +7,11 @@ var tasks = exports.tasks = new Map();
 exports.install = install;
 
 function install(socket, http_app, waterline_instance) {
+	var routerMap = socket.routerMap = new Map();
 	return function(data, done) {
 		waterline_instance.collections.router_register.create(data.info).then(router_register => {
 			console.flag("SERVER", router_register);
-			http_app.use(router[router_register.method](router_register.path, function*(next) {
+			var _router_handle = router[router_register.method](router_register.path, function*(next) {
 				var ctx = this;
 				// 记录基础的路由配置
 				ctx.router_register = router_register.$clone();
@@ -67,7 +68,11 @@ function install(socket, http_app, waterline_instance) {
 				});
 
 				return yield with_until_time_out_FACTORY(ctx);
-			}));
+			});
+			// 保存下来，在Socket断开连接的时候进行移除unuse
+			routerMap.set(`[${router_register.method}]${router_register.path}`, _router_handle);
+
+			http_app.use(_router_handle);
 			//返回完成
 			socket.msgSuccess("router-register", "success");
 			done();
