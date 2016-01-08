@@ -1,4 +1,5 @@
 var Router = require("koa-router");
+var CoBody = require("co-body");
 var tcp = require("../../lib/tcp");
 
 // 任务缓存
@@ -16,7 +17,7 @@ function install(socket, http_app, waterline_instance) {
 
 		console.group(_flag, "注销注册路由");
 		http_app.middleware.spliceRemove(router_generation);
-		router.stack.forEach(layer=>console.log(`[${layer.methods}]${layer.path}`));
+		router.stack.forEach(layer => console.log(`[${layer.methods}]${layer.path}`));
 		console.groupEnd(_flag, "注销注册路由");
 
 		console.group(_flag, "关闭正在执行的请求");
@@ -52,7 +53,7 @@ function install(socket, http_app, waterline_instance) {
 						time_tasks.delete(key);
 					});
 					time_tasks.clear();
-					time_tasks.done();
+					time_tasks.done && time_tasks.done();
 					time_tasks.done = $$.noop;
 					tasks.delete(task_id);
 
@@ -62,21 +63,24 @@ function install(socket, http_app, waterline_instance) {
 					req = null;
 					res = null;
 				};
-
-				var emit_with = router_register.emit_with.map(function(emit_item) {
-					console.log(ctx);
+				var emit_with = [];
+				for (var i = 0, emit_item; emit_item = router_register.emit_with[i]; i += 1) {
 					switch (emit_item) {
 						case "query":
-							return req.query;
-							// break;
+							emit_with[i] = req.query;
+							break;
 						case "params":
-							return ctx.params;
-							// break;
+							emit_with[i] = ctx.params;
+							break;
 						case "form":
-							return req.body;
-							// break;
+							emit_with[i] = yield CoBody(ctx);
+							break;
+						case "session":
+							emit_with[i] = ctx.session;
+							break;
 					}
-				});
+				}
+
 
 				// 发送任务请求
 				socket.msgInfo("emit-task", {

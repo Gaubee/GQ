@@ -25,23 +25,38 @@ function install(socket, http_app, waterline_instance) {
 		var res = ctx.res;
 
 		var return_data = data.info.return_data;
+
+		//------------ status
 		if (return_data.status) {
 			res.statusCode = return_data.status;
 		}
-		if (return_data.set_cookies) {
+		//------------ cookies
+		if (Array.isArray(return_data.set_cookies)) {
 			return_data.set_cookies.forEach(set_cookie_args =>
 				ctx.cookies.set.apply(ctx.cookies, set_cookie_args))
 		}
+		//------------ response_type
 		if (return_data.response_type) {
 			res.type = return_data.response_type;
 		}
+		//------------ body
 		if (return_data.body) {
-			res.write(return_data.body)
+			if (!ctx.body) {
+				ctx.body = return_data.body
+			} else if (ctx.body instanceof Buffer) {
+				ctx.body = Buffer.concat(ctx.body, return_data.body);
+			} else {
+				ctx.body += return_data.body
+			}
+		}
+		//------------ session
+		if (return_data.session) {
+			for (var key in return_data.session) {
+				ctx.session[key] = return_data.session[key]
+			}
 		}
 
 		if (!data.info.stop_end_send) {
-			res.end();
-
 			// 销毁ctx
 			ctx.destory();
 			socket.msgSuccess("return-task", {

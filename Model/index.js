@@ -7,7 +7,7 @@ var waterline = new Waterline();
 // Set up the storage configuration for waterline.
 var config = {
 	adapters: {
-		'memory': sailsMemoryAdapter
+		'memory': sailsMemoryAdapter,
 	},
 
 	connections: {
