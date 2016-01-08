@@ -47,6 +47,9 @@ module.exports = [
 				type: "integer",
 				defaultsTo: 30 * 1000,
 			},
+			owner: {
+				model: "router_init"
+			}
 		}
 	})
 ];

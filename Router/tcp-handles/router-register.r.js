@@ -28,9 +28,14 @@ function install(socket, http_app, waterline_instance) {
 		console.groupEnd(_flag, "关闭正在执行的请求");
 	});
 
+
 	return function(data, done) {
+		data.info.owner = socket.router_init;
+
 		waterline_instance.collections.router_register.create(data.info).then(router_register => {
+
 			console.flag("SERVER", router_register);
+
 			router[router_register.method](router_register.path, function*(next) {
 				var ctx = this;
 				// 记录基础的路由配置
