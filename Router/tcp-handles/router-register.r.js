@@ -81,7 +81,9 @@ function install(socket, http_app, waterline_instance) {
 							emit_with[i] = ctx.params;
 							break;
 						case "form":
-							emit_with[i] = yield CoBody(ctx);
+							emit_with[i] = yield CoBody(ctx,{
+								limit:"20MB"
+							});
 							break;
 						case "session":
 							emit_with[i] = ctx.session;

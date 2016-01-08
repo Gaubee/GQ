@@ -45,7 +45,7 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 	info: {
 		doc:{ // 这个路由的描述
 			des: "**描述description**",
-			parameters: [{
+			params: [{
 				type: "String",
 				name: "param_1",
 				des: "参数1"
@@ -72,6 +72,7 @@ initKey代表着应用身份。这个身份key按需颁发，并且在多个连�
 {
 	type: "success",
 	from: "router-reigster",
+	info: router_reigster_data
 }
 ```
 则说明这个Path将会路由到你的应用上。

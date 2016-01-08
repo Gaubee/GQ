@@ -21,14 +21,14 @@ function install(socket, http_app, waterline_instance) {
 			return;
 		}
 		var time_tasks = ctx.time_tasks;
-		var req = ctx.req;
-		var res = ctx.res;
+		var req = ctx.request;
+		var res = ctx.response;
 
 		var return_data = data.info.return_data;
 
 		//------------ status
 		if (return_data.status) {
-			res.statusCode = return_data.status;
+			ctx.status = return_data.status;
 		}
 		//------------ cookies
 		if (Array.isArray(return_data.set_cookies)) {
