@@ -10,13 +10,16 @@ exports.install = install;
 function install(socket, http_app, waterline_instance) {
 	var router = socket.router = Router();
 	var router_generation = socket.router_generation = router.routes();
+	var router_allowedmethods_generation = socket.router_allowedmethods_generation = router.allowedMethods();
 	http_app.use(router_generation);
+	http_app.use(router_allowedmethods_generation); 
 	// 如果关闭了,socket注册的Router要全部注销掉
 	socket.on("close", function() {
 		var _flag = console.flagHead("SOCKET CLOSE");
 
 		console.group(_flag, "注销注册路由");
 		http_app.middleware.spliceRemove(router_generation);
+		http_app.middleware.spliceRemove(router_allowedmethods_generation);
 		router.stack.forEach(layer => console.log(`[${layer.methods}]${layer.path}`));
 		console.groupEnd(_flag, "注销注册路由");
 
