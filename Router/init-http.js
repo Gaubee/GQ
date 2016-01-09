@@ -3,6 +3,7 @@ var Session = require('koa-session');
 var app = koa();
 // Session
 app.keys = ['QAQ'];
+app.use(Session(app));
 app.use(function*(next) {
 
 	this.set("Access-Control-Allow-Credentials", true);
@@ -12,7 +13,6 @@ app.use(function*(next) {
 
 	yield next;
 })
-app.use(Session(app));
 
 app.listen(4100, function() {
 	console.flag("init", "HTTP基础服务已经启动", app)
