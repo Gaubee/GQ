@@ -41,9 +41,10 @@ function install(socket, http_app, waterline_instance) {
 		}
 		//------------ body
 		if (return_data.body) {
+			// console.log("ctx.body",ctx.body,typeof ctx.body)
 			if (!ctx.body) {
 				ctx.body = return_data.body
-			} else if (ctx.body instanceof Buffer) {
+			} else if (Buffer.isBuffer(ctx.body)) {
 				ctx.body = Buffer.concat(ctx.body, return_data.body);
 			} else {
 				ctx.body += return_data.body
