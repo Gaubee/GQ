@@ -4,6 +4,7 @@ var app = koa();
 // Session
 app.keys = ['QAQ'];
 app.use(Session(app));
+require('koa-qs')(app, 'extended');
 app.use(function*(next) {
 
 	this.set("Access-Control-Allow-Credentials", true);
