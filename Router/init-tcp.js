@@ -4,6 +4,7 @@
 var co = require("co");
 var tcp = require("../lib/tcp");
 var Router = require("koa-router");
+var PathObject = require('path-object')("/");
 var server = tcp.createServer({
 	host: "0.0.0.0",
 	port: 4001
@@ -33,6 +34,37 @@ function bridgeHttp(http_app, waterline_instance) {
 			info: yield res
 		};
 	});
+	api_router.get("/api/to_json", function*(socoon) {
+		var jsonp = this.query.jsonp;
+		console.log(this.req)
+		var host = this.query.host || this.protocol + "://" + this.get("host") || "${%HOST%}";
+		var prefix = jsonp ? $$.uuid() : host
+
+		var res = new PathObject();
+
+		yield connPool.map(co.wrap(function*(socoon) {
+			var apis = yield waterline_instance.collections.router_register.find({
+				owner: socoon.router_init.id
+			});
+			apis.forEach(function(api) {
+				var path_fragments = api.path.split("/");
+				var path_for_object_s_key = api.path.replace(/:/g, "$");
+				var formatable_path = prefix + api.path.replace(/:([^:\/]+)/g, "${$1}");
+				res.set(path_for_object_s_key, formatable_path);
+			});
+		}));
+
+		var res_str = JSON.stringify(res);
+
+		if (jsonp) {
+			this.type = "application/javascript"
+			res_str = jsonp + "(function(h){return " + res_str.replaceAll('"' + prefix, 'h+"') + "}(" + JSON.stringify(host) + "));";
+		} else {
+			this.type = "application/json"
+		}
+		this.body = res_str;
+	});
+
 	http_app.use(api_router.routes());
 
 
