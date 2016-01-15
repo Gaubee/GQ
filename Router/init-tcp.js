@@ -19,19 +19,22 @@ function bridgeHttp(http_app, waterline_instance) {
 	// API Router
 	var api_router = Router();
 	api_router.get("/api/all", function*(next) {
+		console.log(connPool.size);
 		var res = [];
-		connPool.forEach(co.wrap(function*(socoon) {
+		yield connPool.map(co.wrap(function*(socoon) {
 			console.log(socoon.router_init)
-			res.push({
-				base_info: waterline_instance.collections.router_init.findOne(socoon.router_init.id).populate("info"),
-				apis: waterline_instance.collections.router_register.find({
-					owner: socoon.router_init.id
-				}).populate("doc")
-			});
+			if (socoon.router_init) {
+				res.push({
+					base_info: yield waterline_instance.collections.router_init.findOne(socoon.router_init.id).populate("info"),
+					apis: yield waterline_instance.collections.router_register.find({
+						owner: socoon.router_init.id
+					}).populate("doc")
+				});
+			}
 		}));
 		this.body = {
 			type: "json",
-			info: yield res
+			info: res
 		};
 	});
 	api_router.get("/api/to_json", function*(socoon) {
