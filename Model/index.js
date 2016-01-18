@@ -11,7 +11,7 @@ var config = {
 	},
 
 	connections: {
-		default: {
+		'memory': {
 			adapter: 'memory'
 		}
 	}

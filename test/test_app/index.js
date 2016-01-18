@@ -4,9 +4,10 @@ console.flag("TEST", "运行测试代码");
 
 var tasks = [
 	require("./router_init_test.js"),
-	require("./router_register_test.js"),
-	require("./emit_task_test.js"),
-	require("./task_timeout_test.js"),
+	// require("./router_register_test.js"),
+	// require("./emit_task_test.js"),
+	// require("./task_timeout_test.js"),
+	require("./redis_exec_test.js"),
 ];
 var w = new $$.When(1);
 

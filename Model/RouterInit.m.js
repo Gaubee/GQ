@@ -2,7 +2,7 @@ var Waterline = require('waterline');
 module.exports = [
 	Waterline.Collection.extend({
 		identity: '_router_init__info',
-		connection: 'default',
+		connection: 'memory',
 		attributes: {
 			author: "string",
 			version: "string"
@@ -11,7 +11,7 @@ module.exports = [
 
 	Waterline.Collection.extend({
 		identity: '_router_init__ip_address',
-		connection: 'default',
+		connection: 'memory',
 		attributes: {
 			host: {
 				type: "string",
@@ -27,7 +27,7 @@ module.exports = [
 
 	Waterline.Collection.extend({
 		identity: 'router_init',
-		connection: 'default',
+		connection: 'memory',
 		attributes: {
 			// type: {
 			// 	type: "string",

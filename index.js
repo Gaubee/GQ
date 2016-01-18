@@ -14,8 +14,6 @@ function run() {
 
 			if (process.argv.indexOf("--test") !== -1) {
 				setTimeout(function() {
-					console.log("\n-------------------------");
-					console.flag("TEST", "运行测试代码");
 					//运行测试
 					require("./test/test_app").run();
 				}, 500);

@@ -2,7 +2,7 @@ var Waterline = require('waterline');
 module.exports = [
 	Waterline.Collection.extend({
 		identity: '_router_register_doc',
-		connection: 'default',
+		connection: 'memory',
 		attributes: {
 			des: "string",
 			doc: {
@@ -13,7 +13,7 @@ module.exports = [
 	}),
 	Waterline.Collection.extend({
 		identity: 'router_register',
-		connection: 'default',
+		connection: 'memory',
 		types: {
 			http_method: function(method) {
 				return ["get", "post", "delete", "put"].indexOf(this.method = method.toLowerCase()) !== -1
