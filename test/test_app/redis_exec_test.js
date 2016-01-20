@@ -1,22 +1,12 @@
+var co = require("co");
+var run_test = co.wrap(function*(socket, next) {
+	try {
+		var res = yield socket.redisExec("ZADD", ["test.gaubee", 1, "Gaubee", 2, "Bangeel"]);
+		console.log("ZADD", res);
+		var res = yield socket.redisExec("ZRANGEBYSCORE", ["test.gaubee", "-inf", "+inf"]);
+		console.log("ZRANGEBYSCORE", res);
+	} catch (e) {
+		console.error(e)
+	}
+});
 exports.run = run_test;
-
-function run_test(socket, next) {
-	socket.msgInfo("redis-exec", {
-		task_id: "RUN-REDIS-EXEC-TASK-ID-1",
-		handle: "ZADD",
-		args: ["test.gaubee", 1, "Gaubee", 2, "Bangeel"]
-	});
-	socket.msgInfo("redis-exec",{
-		task_id:"RUN-REDIS-EXEC-TASK-ID-2",
-		handle:"ZRANGEBYSCORE",
-		args: ["test.gaubee", "-inf", "+inf"]
-	});
-	socket.onMsgSuccess("redis-return", function(data, done) {
-		console.log(data)
-		done();
-	});
-	socket.onMsgError("redis-return", function(data, done) {
-		console.log(data);
-		done();
-	});
-};

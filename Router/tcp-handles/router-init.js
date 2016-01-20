@@ -35,6 +35,7 @@ function install(socket, http_app, waterline_instance) {
 			done();
 		}).catch(err => {
 			socket.msgError("router-init", err, "[路由] 申请 初始化失败");
+			socket.destroy();
 			done();
 		});
 	});

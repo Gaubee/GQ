@@ -46,6 +46,9 @@ function bridgeHttp(http_app, waterline_instance) {
 		var res = new PathObject();
 
 		yield connPool.map(co.wrap(function*(socoon) {
+			if (!socoon.router_init) {
+				return;
+			}
 			var apis = yield waterline_instance.collections.router_register.find({
 				owner: socoon.router_init.id
 			});

@@ -5,7 +5,7 @@ exports.install = install;
 
 function install(socket, http_app, waterline_instance) {
 	return function(data, done) {
-		console.flag("SERVER:redis-exec", data);
+		console.flag("SERVER:redis-exec", "\n", data.info);
 		if (!(client[data.info.handle] instanceof Function)) {
 			socket.msgError("redis-return", {
 				task_id: data.info.task_id,

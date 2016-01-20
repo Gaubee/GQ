@@ -7,3 +7,10 @@ co(function*() {
 }, function(err) {
 	console.error(err.stack);
 });
+
+co(function * () {
+	yield 1;
+	yield 2;
+	yield 3;
+	console.log(4)
+})
