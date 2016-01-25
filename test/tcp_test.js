@@ -1,5 +1,6 @@
 var net = require("net");
 var i = 0;
+setTimeout(process.exit, 1000);
 var server = net.createServer(function(socket) {
 	socket.on("data", function(data) {
 		i += 1;
@@ -14,6 +15,7 @@ server.listen({
 	port: "233"
 }, function() {
 	var address = server.address();
+	console.log(address)
 	var client = net.connect(address,
 		function() { //'connect' listener
 			console.log('connected to server!');

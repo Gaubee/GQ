@@ -1,5 +1,6 @@
 var Router = require("koa-router");
 var CoBody = require("co-body");
+var co = require("co");
 var tcp = require("../../lib/tcp");
 tcp.config.hidden_groups["router-register"] = true;
 
@@ -13,15 +14,18 @@ function install(socket, http_app, waterline_instance) {
 	var router_generation = socket.router_generation = router.routes();
 	var router_allowedmethods_generation = socket.router_allowedmethods_generation = router.allowedMethods();
 	http_app.use(router_generation);
-	http_app.use(router_allowedmethods_generation); 
+	http_app.use(router_allowedmethods_generation);
 	// 如果关闭了,socket注册的Router要全部注销掉
-	socket.on("close", function() {
+	socket.on("close", co.wrap(function*() {
 		var _flag = console.flagHead("SOCKET CLOSE");
 
 		console.group(_flag, "注销注册路由");
 		http_app.middleware.spliceRemove(router_generation);
 		http_app.middleware.spliceRemove(router_allowedmethods_generation);
 		router.stack.forEach(layer => console.log(`[${layer.methods}]${layer.path}`));
+		yield waterline_instance.collections.router_register.destroy({
+			owner: socket.router_init.id
+		});
 		console.groupEnd(_flag, "注销注册路由");
 
 		console.group(_flag, "关闭正在执行的请求");
@@ -30,7 +34,7 @@ function install(socket, http_app, waterline_instance) {
 			ctx.destory(task_id);
 		});
 		console.groupEnd(_flag, "关闭正在执行的请求");
-	});
+	}));
 
 
 	return function(data, done) {
@@ -82,8 +86,8 @@ function install(socket, http_app, waterline_instance) {
 							emit_with[i] = ctx.params;
 							break;
 						case "form":
-							emit_with[i] = yield CoBody(ctx,{
-								limit:"20MB"
+							emit_with[i] = yield CoBody(ctx, {
+								limit: "20MB"
 							});
 							break;
 						case "session":

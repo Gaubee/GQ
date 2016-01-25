@@ -15,12 +15,12 @@ module.exports = [
 		attributes: {
 			host: {
 				type: "string",
-				ip: true,
+				// ip: true,
 				defaultsTo: "0.0.0.0"
 			},
 			port: {
 				type: "integer",
-				required: true
+				// required: true
 			}
 		}
 	}),

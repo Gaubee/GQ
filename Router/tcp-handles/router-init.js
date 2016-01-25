@@ -1,3 +1,4 @@
+var co = require("co");
 var path = require("path");
 
 var events = {};
@@ -34,9 +35,12 @@ function install(socket, http_app, waterline_instance) {
 			socket.msgSuccess("router-init", "success");
 			done();
 		}).catch(err => {
-			socket.msgError("router-init", err, "[路由] 申请 初始化失败");
+			socket.msgError("router-init", err.details, "[路由] 申请 初始化失败");
 			socket.destroy();
 			done();
 		});
 	});
+	socket.on("close", co.wrap(function*() {
+		yield waterline_instance.collections.router_init.destroy(socket.router_init.id)
+	}));
 };
