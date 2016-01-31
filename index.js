@@ -6,8 +6,9 @@ exports.run = run;
 function run() {
 	return new Promise(function(resolve) {
 		//安装Model层
+
 		require("./Model").install(function(waterline_instance) {
-			//初始化路由层
+				//初始化路由层
 			var r = require("./Router").install(waterline_instance);
 
 			resolve(r)
@@ -20,7 +21,7 @@ function run() {
 			}
 
 		});
-	});
+	}).catch(e => console.error(e.stack))
 };
 
 if (module == require.main) {
