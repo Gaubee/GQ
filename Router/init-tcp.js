@@ -2,7 +2,7 @@
  * 提供给外部的基于TCP协议的注册功能
  */
 var co = require("co");
-var tcp = require("../lib/tcp");
+var tcp = require("GQ-core/tcp");
 var Router = require("koa-router");
 var CoBody = require("co-body");
 var PathObject = require('path-object')("/");

@@ -3,7 +3,7 @@
 ## TODOLIST
 
 [ ] v1.0.0 ~ v2.0.0 接口的注册与协作
-  - [ ] v1.1.0 将Model与Controller分为System级别和Application两个级别，并考虑组件化（Component）的Application建设
+  - [ ] v1.1.0 将Model与Component分为System级别和Application两个级别，并考虑组件化（Component）的Application建设
   - [ ] v1.2.0 实现管理员对象，可接管System级别的对象
   - [ ] v1.3.0 实现管理员创建Application对象
   - [ ] v1.4.0 实现开发者对象，以及对应的审核流程。
@@ -11,7 +11,7 @@
   - [ ] v1.6.0 实现负载均衡的算法
   - [ ] v1.7.0 实现接口权重分配，从而实现本地替代线上接口、线上接口暂停使用等功能。
   - [ ] v1.8.0 实现Component
-  - [ ] v1.9.0 实现Model
+  - [ ] v1.9.0 实现Model，并实现国际化的错误提示配置功能
 
 
 ## 1. Application
