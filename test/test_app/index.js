@@ -1,4 +1,4 @@
-require("../../lib/global");
+require("GQ-core");
 console.log("\n-------------------------");
 console.flag("TEST", "运行测试代码");
 
@@ -11,7 +11,7 @@ var tasks = [
 ];
 var w = new $$.When(1);
 
-var tcp = require("../../lib/tcp");
+var tcp = require("GQ-core/tcp");
 
 var client = tcp.createClient({
 	address: '0.0.0.0',

@@ -1,8 +1,8 @@
 var Router = require("koa-router");
 var CoBody = require("co-body");
 var co = require("co");
-var tcp = require("../../lib/tcp");
-tcp.config.hidden_groups["router-register"] = true;
+var tcp = require("GQ-core/tcp");
+tcp.config.hiddenFlags.add("router-register");
 
 // 任务缓存
 var tasks = exports.tasks = new Map();
