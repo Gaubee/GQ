@@ -7,7 +7,9 @@ var tasks = [
 	// require("./router_register_test.js"),
 	// require("./emit_task_test.js"),
 	// require("./task_timeout_test.js"),
-	require("./redis_exec_test.js"),
+	// require("./redis_exec_test.js"),
+	// require("./router_register_and_emit_test.js"),
+	require("./multiRegisterRouter_test.js"),
 ];
 var w = new $$.When(1);
 
@@ -35,13 +37,19 @@ function run_tasks(i) {
 		if (i < tasks.length) {
 			console.log("\n--------------------------")
 			console.flag("run test", i + 1, "↓\n--------------------------");
-			tasks[i].run(client, function() {
-				setTimeout(function() {
-					run_tasks(i + 1);
-				}, 300);
-			});
+			try {
+				tasks[i].run(client, function() {
+					setTimeout(function() {
+						run_tasks(i + 1);
+					}, 300);
+				});
+			} catch (e) {
+				console.error(console.flagHead("test uncatch error"), e.stack);
+			}
 		} else {
+			console.log("\n--------------------------")
 			console.flag("test success", "所有测试运行完成");
+			console.log("--------------------------")
 			process.exit(0)
 		}
 	});

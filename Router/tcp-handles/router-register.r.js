@@ -113,7 +113,8 @@ function install(socket, http_app, waterline_instance) {
 			socket.msgSuccess("router-register", router_register);
 			done();
 		}).catch(err => {
-			socket.msgError("router-register", tcp.errorWrap(err), "[路由] 注册失败");
+			console.flag("router-register:error", err);
+			socket.msgError("router-register", data.info, err.message);
 			done();
 		});
 	}
