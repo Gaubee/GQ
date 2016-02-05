@@ -1,9 +1,13 @@
 exports.install = install;
+var IdSocketMap = exports.id_socket_map = new Map();
+var comExtendHandle = require("GQ-core/tcp/extends-com");
 
 function install(socket, http_app, waterline_instance) {
-	return co.wrap(function*(data, done) {
-		console.log("data", data)
-		try {
+	return function(data, done) {
+		return co(function*() {
+			if (socket.using_app) {
+				Throw("type", "using Application<" + socket.using_app.app_name + ">, you can not use multiple Application")
+			}
 			// 校验用户登录
 			var user_name = data.info.user_name;
 			var loginer = yield waterline_instance.collections.user.findOne({
@@ -31,12 +35,15 @@ function install(socket, http_app, waterline_instance) {
 
 			socket.loginer = loginer;
 			socket.using_app = app;
+			comExtendHandle.initComponent(socket, true);
+
+			IdSocketMap.set(socket._id, socket);
 			socket.msgSuccess("use-app", app);
 			done();
-		} catch (e) {
-			console.flag("use-app", e.messagem, "\n", e.stack);
-			socket.msgError("use-app", data.info, e.message);
+		}).catch(err => {
+			console.flag("use-app", err.messagem, "\n", err.stack);
+			socket.msgError("use-app", data.info, err.message);
 			done();
-		}
-	});
+		});
+	}
 };

@@ -53,6 +53,8 @@
 	info: router_component_data
 }
 ```
+> 关于同名问题。在一个Application中，同名的组件并不会当作重载来对待，而是作为用来作为负载均衡的目的，或者说可以用来做A/B测试。
+不论如何，在一个Application开发中，开发者之间应该自己协同好这些组件的命名。
 
 ## 2. 组件初始化
 
@@ -77,14 +79,22 @@
 	from: "init-component"
 	info: {
 		task_id: "**HASH**",
-		instance_id: "**HASH**",
 		protos: { /**Component Prototypes**/ }
 	}
 }
 ```
 
-> 注意：DOC对象与实际返回的接口是互不相干的两部分，DOC可以自动生成也可以滞空，实现不同语言版本`GQ-core`的开发者需要自己去规范接口。这种带生命周期的组件并不是要将一种语言的类对象完全兼容，而仅仅是提供一种和其它应用进行交互的一种方案。
+> 注意：DOC对象与实际返回的接口是互不相干的两部分，DOC可以自动生成也可以滞空，实现不同语言版本`GQ-core`的开发者需要自己去规范接口。
+这种带生命周期的组件并不是要将一种语言的类对象完全兼容，而仅仅是提供一种和其它应用进行交互的一种方案。
 比如在nodejs版本的`GQ-core`中，尽管是提供了`class`，`Function`，`Object`三种对象的组件化方案，但是也无法面面俱到。
+
+> 关于task_id的唯一性：要注意的是，Client1发送的`task_id`和Client2接收的`task_id`并不是一样的。
+`task_id`是相对于Client1唯一的id。
+Server层面上是手动生成一个`safe_task_id`来替代`task_id`，
+确保`task_id`在Client2上的安全性以及独立性，
+在Client2返回后再将`safe_task_id`替换成Client1认识的`task_id`。
+总之，Server就是在中间协调，确保二者数据交互的安全性。
+二者只需要对Server负责，也只有Server知道是到底谁在调用谁。
 
 ## 3. 指令化的组件
 
@@ -100,7 +110,7 @@ GQ对于组件的运行，没有做任何限制，所以只要开发者愿意，
 {
 	type: "order-component",
 	info: {
-		instance_id: "**HASH**",
+		task_id: "**HASH**",
 		order_id: "**HASH**",
 		order: "string",
 		data: { /**/ }
@@ -111,7 +121,7 @@ GQ对于组件的运行，没有做任何限制，所以只要开发者愿意，
 	type: "success",
 	from: "order-component",
 	info:{
-		instance_id: "**HASH**",
+		task_id: "**HASH**",
 		order_id: "**HASH**",
 		returns:{/**/}
 	}
@@ -130,7 +140,7 @@ GQ对于组件的运行，没有做任何限制，所以只要开发者愿意，
 {
 	type: "abort-component",
 	info:{
-		instance_id: "**HASH**",
+		task_id: "**HASH**",
 	}
 }
 ```

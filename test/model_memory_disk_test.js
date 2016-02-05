@@ -23,9 +23,29 @@ co(function*() {
 
 	var my_component = yield collections.component.create({
 		name: "zz",
-		app: my_app
+		app: my_app.id,
+		methods: [{
+			z: "z"
+		}, {
+			zz: {
+				zz: "zz"
+			}
+		}]
 	});
-	console.log(yield collections.component.findByName("zz").populate("app"));
+	console.log(yield collections.component.findByName("zz"));
+
+	var my_component_2 = yield collections.component.findOrCreate({
+		name: "zz",
+		app: my_app.id,
+		methods: [{
+			z: "z"
+		}, {
+			zz: {
+				zz: "zz"
+			}
+		}]
+	});
+	console.log(yield collections.component.findByName("zz").populateAll());
 
 }).catch(e => {
 	console.error(e.message, "\n", e.stack);

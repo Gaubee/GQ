@@ -12,6 +12,7 @@ var tasks = [
 	// require("./multiRegisterRouter_test.js"),
 	require("./application_test.js"),
 	require("./component_test.js"),
+	require("./component_run_test.js"),
 ];
 var w = new $$.When(1);
 
