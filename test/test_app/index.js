@@ -9,7 +9,9 @@ var tasks = [
 	// require("./task_timeout_test.js"),
 	// require("./redis_exec_test.js"),
 	// require("./router_register_and_emit_test.js"),
-	require("./multiRegisterRouter_test.js"),
+	// require("./multiRegisterRouter_test.js"),
+	require("./application_test.js"),
+	require("./component_test.js"),
 ];
 var w = new $$.When(1);
 

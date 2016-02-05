@@ -22,11 +22,11 @@ var config = {
 var install_w = new $$.When(1);
 waterline.install = function(cb) {
 	install_w.then(function(args) {
-		cb(args[0])
+		cb(null, args[0])
 	});
 	waterline.install = function(cb) {
 		install_w.then(function(args) {
-			cb(args[0])
+			cb(null, args[0])
 		});
 	};
 
@@ -54,7 +54,7 @@ waterline.install = function(cb) {
 
 	waterline.initialize(config, function(err, ontology) {
 		if (err) {
-			console.error(err);
+			cb(err);
 			return;
 		}
 		install_w.ok(0, ontology)
