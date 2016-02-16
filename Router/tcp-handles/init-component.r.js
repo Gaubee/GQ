@@ -1,5 +1,4 @@
 exports.install = install;
-var comInstanceWeakMap = exports.com_instance_weakmap = new WeakMap();
 
 var IdSocketMap = require("./use-app.r.js").id_socket_map;
 
@@ -11,7 +10,7 @@ function install(socket, http_app, waterline_instance) {
 			// 校验Task_id
 			var task_id = String.asString(info.task_id);
 			if (!task_id) {
-				Throw("type", "task_id mush be Unique-String.")
+				Throw("type", "task_id must be Unique-String.")
 			}
 			// 根据app和com信息来获取组件服务商
 			var app_name = String.asString(info.app_name);
@@ -26,7 +25,7 @@ function install(socket, http_app, waterline_instance) {
 			}
 			var com_name = String.asString(info.com_name);
 			if (!com_name) {
-				Throw("type", "com_name mush be String.")
+				Throw("type", "com_name must be String.")
 			}
 			var coms = yield waterline_instance.collections.component.find({
 				name: com_name,
@@ -45,14 +44,19 @@ function install(socket, http_app, waterline_instance) {
 			}
 
 			// 连接ID，用来指向组件服务商的一个上下文，以及组件使用者的连接对象。
-			var safe_task_id = $$.uuid("TASK-ID@");
+			var safe_task_id = $$.uuid("SAFE-TASK-ID@");
 			info.task_id = safe_task_id;
 
-			var com_instance = yield com_socket.callInitComponent(safe_task_id, com_name, info);
+			var com_instance = yield com_socket.callInitComponent(safe_task_id, com_name, info.init_protos);
 
 			com_instance.task_id = task_id;
-			console.flag("return to client component",com_instance)
+			console.log("[APPLICATION NAME]: ".colorsHead(), app.app_name, "\n",
+				"[COMPONENT NAME]: ".colorsHead(), com_name);
 
+			socket.com_task_and_safe_task_map.set(task_id, {
+				safe_task_id: safe_task_id,
+				com_socket_id: com_socket_id,
+			});
 			socket.msgSuccess("init-component", com_instance);
 
 			done();

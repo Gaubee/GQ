@@ -1,6 +1,6 @@
 {
   "name": "gq-core",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Gentle Queen是一个开发者协同开发应用的平台",
   "main": "index.js",
   "scripts": {

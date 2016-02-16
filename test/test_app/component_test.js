@@ -8,6 +8,7 @@ function run_test(socket, next) {
 			constructor(name, age) {
 				this.name = name
 				this.age = age
+					// console.log(this);
 			}
 			say(word) {
 				return this.name + ": " + word;
@@ -25,7 +26,8 @@ function run_test(socket, next) {
 		var c1 = yield socket.registerComponent("c1", {
 			des: "C1 Com"
 		}, C1);
-		console.log(JSON.stringify(c1.doc, null, "    "), c1.uid);
+		// console.log(JSON.stringify(c1.doc, null, "    "), c1.uid);
+		console.log("组件:c1注册完成", c1.uid);
 
 		/*C2*/
 		var c2 = yield socket.registerComponent("c2", {
@@ -36,7 +38,8 @@ function run_test(socket, next) {
 				return init_protos.name + ": " + word
 			}
 		});
-		console.log(JSON.stringify(c2.doc, null, "    "), c2.uid);
+		// console.log(JSON.stringify(c2.doc, null, "    "), c2.uid);
+		console.log("组件:c2注册完成", c2.uid);
 
 		/*C3*/
 		var c3 = yield socket.registerComponent("c3", {
@@ -53,14 +56,16 @@ function run_test(socket, next) {
 			word: "QAQ",
 			__no_as_com_proto__: [],
 			__as_com_proto__: []
-		})
-		console.log(JSON.stringify(c3.doc, null, "    "), c3.uid);
+		});
+		// console.log(JSON.stringify(c3.doc, null, "    "), c3.uid);
+		console.log("组件:c3注册完成", c3.uid);
 
 		// /*C4*/
 		// var c4 = yield socket.registerComponent("c1", {
 		// 	des: "C4 Com",
 		// }, [])
-		// console.log(JSON.stringify(c4.doc, null, "    "), c4.uid);
+		// // console.log(JSON.stringify(c4.doc, null, "    "), c4.uid);
+		// console.log("组件:c4注册完成",c4.uid);
 
 		next();
 	}).catch(e => {
