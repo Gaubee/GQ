@@ -6,28 +6,36 @@ function run_test(socket, next) {
 		/*C1*/
 		class C1 {
 			constructor(name, age) {
-				this.name = name
-				this.age = age
-					// console.log(this);
+				this.name = name;
+				this.age = age;
+				// console.log(this);
 			}
+			[socket.destroy_symbol]() {
+				console.log("RUN DESTROY");
+				return ["QAQ"]
+			}
+
 			say(word) {
 				return this.name + ": " + word;
 			}
 		}
+		console.log("socket.destroy_symbol:",socket.destroy_symbol,typeof C1.prototype[socket.destroy_symbol]);
 		C1.prototype.nextYear = function() {
 			return this.age += 1;
 		}.noAsComProto();
 		C1.prototype._die = function(in_year) {
+			Throw("range", "DIE!")
 			return this.age = in_year;
 		}.asComProto({
 			des: "die in year",
 			params: ["in_year|Number"]
 		});
 		var c1 = yield socket.registerComponent("c1", {
-			des: "C1 Com"
+			des: "C1 Com",
+			properties: ["name", "age"]
 		}, C1);
 		// console.log(JSON.stringify(c1.doc, null, "    "), c1.uid);
-		console.log("组件:c1注册完成", c1.uid);
+		console.log("组件:c1注册完成", c1.doc);
 
 		/*C2*/
 		var c2 = yield socket.registerComponent("c2", {

@@ -37,6 +37,7 @@ function install(socket, http_app, waterline_instance) {
 			socket.using_app = app;
 			comExtendHandle.initComponent(socket, true);
 			comExtendHandle.orderComponent(socket, true);
+			comExtendHandle.destroyComponent(socket, true);
 			socket.com_task_and_safe_task_map = new Map();// client1 => server => {safe_task_idm, com_socket_id}
 
 			IdSocketMap.set(socket._id, socket);

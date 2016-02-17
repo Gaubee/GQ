@@ -34,7 +34,7 @@ function install(socket, http_app, waterline_instance) {
 			done();
 
 		}).catch(err => {
-			console.flag("component-register:error", err.message, "\n", err.stack);
+			console.flag("component-register:error", err);
 			socket.msgError("component-register", data.info, err.message);
 			done();
 		});

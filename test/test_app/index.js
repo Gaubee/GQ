@@ -13,6 +13,7 @@ var tasks = [
 	require("./application_test.js"),
 	require("./component_test.js"),
 	require("./component_run_test.js"),
+	require("./component_destroy_test.js"),
 ];
 var w = new $$.When(1);
 

@@ -61,7 +61,7 @@ function install(socket, http_app, waterline_instance) {
 
 			done();
 		}).catch(err => {
-			console.flag("init-component:error", err.message, "\n", err.stack);
+			console.flag("init-component:error", err);
 			socket.msgError("init-component", data.info, err.message);
 			done();
 		});
