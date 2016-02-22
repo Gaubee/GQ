@@ -1,6 +1,6 @@
-var koa = require('koa');
-var Session = require('koa-session');
-var app = koa();
+const koa = require('koa');
+const Session = require('koa-session');
+const app = koa();
 // Session
 app.keys = ['QAQ'];
 app.use(Session(app));

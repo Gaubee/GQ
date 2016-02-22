@@ -3,17 +3,17 @@ console.log("\n-------------------------");
 console.flag("TEST", "运行测试代码");
 
 var tasks = [
-	require("./router_init_test.js"),
-	// require("./router_register_test.js"),
+	require("./application_test.js"),
+	// require("./router_init_test.js"),
+	require("./router_register_test.js"),
 	// require("./emit_task_test.js"),
 	// require("./task_timeout_test.js"),
 	// require("./redis_exec_test.js"),
 	// require("./router_register_and_emit_test.js"),
 	// require("./multiRegisterRouter_test.js"),
-	require("./application_test.js"),
-	require("./component_test.js"),
-	require("./component_run_test.js"),
-	require("./component_destroy_test.js"),
+	// require("./component_test.js"),
+	// require("./component_run_test.js"),
+	// require("./component_destroy_test.js"),
 ];
 var w = new $$.When(1);
 

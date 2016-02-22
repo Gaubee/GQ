@@ -46,7 +46,8 @@ module.exports = [{
 			defaultsTo: 30 * 1000,
 		},
 		owner: {
-			model: "router_init"
+			model: "application",
+			required: true,
 		}
 	}
 }, ];

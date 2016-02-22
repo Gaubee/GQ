@@ -1,9 +1,8 @@
-var Router = require("koa-router");
-var CoBody = require("co-body");
-var co = require("co");
-var tcp = require("GQ-core/tcp");
+const Router = require("koa-router");
+const CoBody = require("co-body");
+const tcp = require("GQ-core/tcp");
 // 任务缓存
-var tasks = exports.tasks = new Map();
+const tasks = exports.tasks = new Map();
 
 exports.install = install;
 
@@ -22,7 +21,7 @@ function install(socket, http_app, waterline_instance) {
 		http_app.middleware.spliceRemove(router_allowedmethods_generation);
 		router.stack.forEach(layer => console.log(`[${layer.methods}]${layer.path}`));
 		yield waterline_instance.collections.router_register.destroy({
-			owner: socket.router_init.id
+			owner: socket.using_app.id
 		});
 		console.groupEnd(_flag, "注销注册路由");
 
@@ -36,7 +35,7 @@ function install(socket, http_app, waterline_instance) {
 
 
 	return function(data, done) {
-		data.info.owner = socket.router_init;
+		data.info.owner = socket.using_app;
 
 		waterline_instance.collections.router_register.create(data.info).then(router_register => {
 

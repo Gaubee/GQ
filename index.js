@@ -18,8 +18,8 @@ function run() {
 		}
 
 		return r;
-	}).catch(e => {
-		console.error(e.message, "\n", e.stack);
+	}, e => {
+		console.error(e);
 	});
 };
 
