@@ -14,29 +14,26 @@ function install(socket, http_app, waterline_instance) {
 		}
 	}));
 
-	return function(data, done) {
-		return co(function*() {
-			if (!socket.using_app) {
-				Throw("ref", "please use app before register component!");
-			}
-			data.info.app = socket.using_app.id;
-			data.info.uid = socket._id + "|" + data.info.app + "|" + data.info.name;
-			var component_info = yield waterline_instance.collections.component.create(data.info);
+	return co.wrap(function*(data, done) {
+		if (!socket.using_app) {
+			Throw("ref", "please use app before register component!");
+		}
+		data.info.app = socket.using_app.id;
+		data.info.uid = socket._id + "|" + data.info.app + "|" + data.info.name;
+		var component_info = yield waterline_instance.collections.component.create(data.info);
 
-			/*RETURN*/
-			var full_component_info = yield waterline_instance.collections.component.findOne(component_info.id).populateAll();
+		/*RETURN*/
+		var full_component_info = yield waterline_instance.collections.component.findOne(component_info.id).populateAll();
 
-			console.flag("SERVER:component-register", "\n",
-				socket.using_app.app_name, ":", component_info.name +
-				"(" + (Array.isArray(full_component_info.doc.init_protos) ? full_component_info.doc.init_protos : [])
-				.map(init_proto => init_proto.name).join(", ") + ")");
-			socket.msgSuccess("component-register", full_component_info);
-			done();
-
-		}).catch(err => {
-			console.flag("component-register:error", err);
-			socket.msgError("component-register", data.info, err.message);
-			done();
-		});
-	};
+		console.flag("SERVER:component-register", "\n",
+			socket.using_app.app_name, ":", component_info.name +
+			"(" + (Array.isArray(full_component_info.doc.init_protos) ? full_component_info.doc.init_protos : [])
+			.map(init_proto => init_proto.name).join(", ") + ")");
+		socket.msgSuccess("component-register", full_component_info);
+		done();
+	}, err => {
+		console.flag("component-register:error", err);
+		socket.msgError("component-register", data.info, err.message);
+		done();
+	});
 }

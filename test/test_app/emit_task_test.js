@@ -22,11 +22,11 @@ function install_and_run_test(socket, next) {
 		console.error("路由触发失败", data.info.task_id, data.info.task_id.error);
 		done();
 	});
-	run_test().catch(e => console.error(e.stack));
+	run_test(socket.using_app.app_name).catch(e => console.error(e.stack));
 };
 
-var run_test = co.wrap(function*() {
-	var _url = "http://127.0.0.1:4100" + register_info.path;
+var run_test = co.wrap(function*(app_name) {
+	var _url = "http://127.0.0.1:4100/" + app_name + register_info.path;
 	var res = yield $$.curl(_url);
 	console.flag("curl", res, "\n\t\t----> " + _url);
 	return res;

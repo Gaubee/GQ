@@ -6,7 +6,7 @@ var tasks = [
 	require("./application_test.js"),
 	// require("./router_init_test.js"),
 	require("./router_register_test.js"),
-	// require("./emit_task_test.js"),
+	require("./emit_task_test.js"),
 	// require("./task_timeout_test.js"),
 	// require("./redis_exec_test.js"),
 	// require("./router_register_and_emit_test.js"),

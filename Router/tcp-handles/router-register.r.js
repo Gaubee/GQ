@@ -26,6 +26,7 @@ function install(socket, http_app, waterline_instance) {
 		console.groupEnd(_flag, "注销注册路由");
 
 		console.group(_flag, "关闭正在执行的请求");
+		console.log(tasks.length);
 		tasks.forEach((ctx, task_id) => {
 			console.log(`[${ctx.method}]${ctx.path}`);
 			ctx.destory(task_id);
@@ -41,7 +42,8 @@ function install(socket, http_app, waterline_instance) {
 
 			console.flag("SERVER", router_register);
 
-			router[router_register.method](router_register.path, function*(next) {
+			// application的路由前面要自动加上app_name
+			router[router_register.method]("/" + socket.using_app.app_name + router_register.path, function*(next) {
 				var ctx = this;
 				// 记录基础的路由配置
 				ctx.router_register = router_register.$clone();
@@ -111,7 +113,7 @@ function install(socket, http_app, waterline_instance) {
 			done();
 		}).catch(err => {
 			console.flag("router-register:error", err);
-			socket.msgError("router-register", data.info, err.message);
+			socket.msgError("router-register", data.info, err);
 			done();
 		});
 	}
