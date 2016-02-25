@@ -1,20 +1,22 @@
 exports.install = install;
 
-var IdSocketMap = require("./use-app.r.js").id_socket_map;
+console.log(require("./use-app.r.js"))
+const IdSocketMap = require("./use-app.r.js").id_socket_map;
 
 function install(socket, http_app, waterline_instance) {
 
 	return co.wrap(function*(data, done) {
-		var info = data.info;
+		const info = data.info || {};
 		// 校验Task_id
-		var task_id = String.asString(info.task_id);
+		const task_id = String.asString(info.task_id);
 		if (!task_id) {
-			Throw("type", "task_id must be Unique-String.")
+			console.log(new TypeError("task_id must be Unique-String."))
+			return done();
 		}
 		// 根据app和com信息来获取组件服务商
-		var app_name = String.asString(info.app_name);
+		const app_name = String.asString(info.app_name);
 		if (app_name) {
-			var app = yield waterline_instance.collections.application.findOneByApp_name(app_name);
+			const app = yield waterline_instance.collections.application.findOneByApp_name(app_name);
 		} else {
 			app = socket.using_app;
 		}
@@ -22,11 +24,11 @@ function install(socket, http_app, waterline_instance) {
 		if (!app) {
 			Throw("ref", "unknown Application references.")
 		}
-		var com_name = String.asString(info.com_name);
+		const com_name = String.asString(info.com_name);
 		if (!com_name) {
 			Throw("type", "com_name must be String.")
 		}
-		var coms = yield waterline_instance.collections.component.find({
+		const coms = yield waterline_instance.collections.component.find({
 			name: com_name,
 			app: app.id,
 		});
@@ -35,18 +37,18 @@ function install(socket, http_app, waterline_instance) {
 		}
 
 		// TODO，根据负载均衡来判定
-		var com = coms[0];
-		var com_socket_id = com.uid.split("|")[0];
-		var com_socket = IdSocketMap.get(com_socket_id);
+		const com = coms[0];
+		const com_socket_id = com.uid.split("|")[0];
+		const com_socket = IdSocketMap.get(com_socket_id);
 		if (!com_socket) {
 			Throw("ref", "Can not find the Reference-Socket by Socket-ID.");
 		}
 
 		// 连接ID，用来指向组件服务商的一个上下文，以及组件使用者的连接对象。
-		var safe_task_id = $$.uuid("SAFE-TASK-ID@");
+		const safe_task_id = $$.uuid("SAFE-TASK-ID@");
 		info.task_id = safe_task_id;
 
-		var com_instance = yield com_socket.callInitComponent(safe_task_id, com_name, info.init_protos);
+		const com_instance = yield com_socket.callInitComponent(safe_task_id, com_name, info.init_protos);
 
 		com_instance.task_id = task_id;
 		console.log("[APPLICATION NAME]: ".colorsHead(), app.app_name, "\n",
@@ -59,8 +61,8 @@ function install(socket, http_app, waterline_instance) {
 		socket.msgSuccess("init-component", com_instance);
 
 		done();
-	}, err => {
-		console.flag("init-component:error", err);
+	}, (err, data, done) => {
+		// console.flag("init-component:error", err);
 		socket.msgError("init-component", data.info, err.message);
 		done();
 	});

@@ -12,10 +12,7 @@ function install(socket, http_app, waterline_instance) {
 		if (!ctx) {
 			socket.msgError("return-task", {
 				task_id: task_id,
-				error: {
-					details: `[task-extended-timeout] Error: 找不到“${task_id}”所对应的 应用上下文（context）`
-				}
-			});
+			}, `[task-extended-timeout] Error: 找不到“${task_id}”所对应的 应用上下文（context）`);
 			done();
 			return;
 		}
@@ -29,10 +26,7 @@ function install(socket, http_app, waterline_instance) {
 		} else {
 			socket.msgError("task-extended-timeout", {
 				task_id: task_id,
-				error: {
-					details: "extended_timeout 参数有误，必须为大于0的毫秒数"
-				}
-			});
+			}, `extended_timeout 参数有误，必须为大于0的毫秒数`);
 		}
 		done();
 

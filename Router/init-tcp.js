@@ -5,17 +5,13 @@ const tcp = require("GQ-core/tcp");
 const Router = require("koa-router");
 const CoBody = require("co-body");
 const PathObject = require('path-object')("/");
-const server = tcp.createServer({
-	host: "0.0.0.0",
-	port: 4001
-}, function() {
-	console.flag("init", "TCP桥接服务已经启动", server.address());
-});
-const connPool = new Set();
+const connPool = exports.connPool = new Set();
+const server = tcp.createServer();
+exports.server = server;
 
 exports.bridgeHttp = bridgeHttp;
 
-function bridgeHttp(http_app, waterline_instance) {
+function bridgeHttp(http_app, waterline_instance, cb) {
 	// API Router
 	var api_router = Router();
 	// api_router.get("/time_loop", function*(next) {
@@ -97,70 +93,23 @@ function bridgeHttp(http_app, waterline_instance) {
 	// 		this.body = "Error"
 	// 	}
 	// });
-	// api_router.get("/api/all", function*(next) {
-	// 	console.log(connPool.size);
-	// 	var res = [];
-	// 	yield connPool.map(co.wrap(function*(socoon) {
-	// 		// console.log(socoon.router_init)
-	// 		if (socoon.router_init) {
-	// 			res.push({
-	// 				base_info: yield waterline_instance.collections.router_init.findOne(socoon.router_init.id).populate("info"),
-	// 				apis: yield waterline_instance.collections.router_register.find({
-	// 					owner: socoon.router_init.id
-	// 				}).populate("doc")
-	// 			});
-	// 		}
-	// 	}));
-	// 	this.body = {
-	// 		type: "json",
-	// 		info: res
-	// 	};
-	// });
-	// api_router.get("/api/to_json", function*(socoon) {
-	// 	var jsonp = this.query.jsonp;
-	// 	// console.log(this.req)
-	// 	var host = this.query.host || this.protocol + "://" + this.get("host") || "${%HOST%}";
-	// 	var prefix = jsonp ? $$.uuid() : host
-
-	// 	var res = new PathObject();
-
-	// 	yield connPool.map(co.wrap(function*(socoon) {
-	// 		if (!socoon.router_init) {
-	// 			return;
-	// 		}
-	// 		var apis = yield waterline_instance.collections.router_register.find({
-	// 			owner: socoon.router_init.id
-	// 		});
-	// 		apis.forEach(function(api) {
-	// 			var path_fragments = api.path.split("/");
-	// 			var path_for_object_s_key = api.path.replace(/:/g, "$");
-	// 			var formatable_path = prefix + api.path.replace(/:([^:\/]+)/g, "${$1}");
-	// 			res.set(path_for_object_s_key, formatable_path);
-	// 		});
-	// 	}));
-
-	// 	var res_str = JSON.stringify(res);
-
-	// 	if (jsonp) {
-	// 		this.type = "application/javascript"
-	// 		res_str = jsonp + "(function(h){return " + res_str.replaceAll('"' + prefix, 'h+"') + "}(" + JSON.stringify(host) + "));";
-	// 	} else {
-	// 		this.type = "application/json"
-	// 	}
-	// 	this.body = res_str;
-	// });
 
 	http_app.use(api_router.routes());
 
+	server.listen({
+		host: "0.0.0.0",
+		port: 4001
+	}, function() {
+		console.flag("init", "TCP基础服务已经启动", server.address());
+		Function.isFunction(cb) && cb(null, server);
+	});
 
 	server.on("connection", function(socket) {
 		connPool.add(socket);
 		socket.on("close", function() {
 			connPool.delete(socket)
 		});
-
 		require("./tcp-handles/use-app.r").install(socket, http_app, waterline_instance);
-
 	});
 	console.flag("init", "HTTP-TCP桥接完成");
 };

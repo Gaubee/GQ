@@ -1,27 +1,28 @@
 exports.install = install;
-var IdSocketMap = require("./use-app.r.js").id_socket_map;
+const IdSocketMap = require("./use-app.r.js").id_socket_map;
 
 function install(socket, http_app, waterline_instance) {
 
 	return co.wrap(function*(data, done) {
 		console.log(info)
-		var info = data.info || {};
-		var task_id = String.asString(info.task_id);
+		const info = data.info || {};
+		const task_id = String.asString(info.task_id);
 
 		// 校验Task_id
 		if (!task_id) {
-			Throw("type", "task_id must be Unique-String.")
+			console.log(new TypeError("task_id must be Unique-String."));
+			return done();
 		}
 
-		var task_com = socket.com_task_and_safe_task_map.get(task_id);
+		const task_com = socket.com_task_and_safe_task_map.get(task_id);
 		if (!task_com) {
 			Throw("ref", "task_id has not reference to component instance.")
 		}
-		var com_socket = IdSocketMap.get(task_com.com_socket_id);
+		const com_socket = IdSocketMap.get(task_com.com_socket_id);
 
 		info.task_id = task_com.safe_task_id;
 
-		var destroy_info = yield com_socket.callDestroyComponent(info);
+		const destroy_info = yield com_socket.callDestroyComponent(info);
 		destroy_info.task_id = task_id;
 
 		socket.msgSuccess("destroy-component", destroy_info);
@@ -32,10 +33,10 @@ function install(socket, http_app, waterline_instance) {
 		socket.com_task_and_safe_task_map.delete(task_id);
 
 		done();
-	}, err => {
-		console.flag("destroy-component", err)
+	}, (err, data, done) => {
+		// console.flag("destroy-component", err)
 		socket.msgError("destroy-component", {
-			task_id: task_id,
+			task_id: data.info.task_id,
 		}, err);
 		done();
 	});

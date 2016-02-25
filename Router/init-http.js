@@ -13,9 +13,13 @@ app.use(function*(next) {
 	this.set("Access-Control-Allow-Headers", "X-PINGOTHER, Set-Cookie, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version");
 
 	yield next;
-})
-
-app.listen(4100, function() {
-	console.flag("init", "HTTP基础服务已经启动", app)
 });
-module.exports = app;
+
+exports.app = app;
+exports.install = function install(cb) {
+	var port = 4100;
+	app.listen(port, function() {
+		console.flag("init", "HTTP基础服务已经启动", port, app)
+		Function.isFunction(cb) && cb(null, app);
+	});
+};

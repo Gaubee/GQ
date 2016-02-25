@@ -4,16 +4,18 @@ require("GQ-core");
 exports.run = run;
 
 function run() {
-	return co(function*(argument) {
+	return co(function*() {
 		//安装Model层
 		var waterline_instance = yield require("./Model").install;
 		//初始化路由层
-		var r = require("./Router").install(waterline_instance);
+		var r = yield require("./Router").install(waterline_instance);
+		//安装GUI
+		require("./web").install(r);
 
 		if (process.argv.indexOf("--test") !== -1) {
 			setTimeout(function() {
 				//运行测试
-				require("./test/test_app").run();
+				require("./test/test_app").run(r);
 			}, 500);
 		}
 

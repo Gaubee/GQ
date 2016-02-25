@@ -29,7 +29,7 @@ function run_test(socket, next) {
 		console.log(app);
 		next();
 	}).catch(e => {
-		console.flag("use application error", "\n", e.message, e.stack);
+		console.flag("use application error", "\n", e);
 		next();
 	});
 };

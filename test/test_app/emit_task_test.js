@@ -1,4 +1,3 @@
-var co = require("co");
 var register_info = require("./router_register_test").register_info;
 
 exports.run = install_and_run_test;

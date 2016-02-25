@@ -5,6 +5,8 @@ module.exports = [{
 	types: {
 		system_app_name: function(app_name) {
 			return [ // 系统级需要用到的关键字
+					"web",
+					"sys",
 					"system",
 					"dev",
 					"doc",

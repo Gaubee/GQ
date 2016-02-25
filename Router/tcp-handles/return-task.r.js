@@ -5,19 +5,13 @@ exports.install = install;
 function install(socket, http_app, waterline_instance) {
 
 	// 接受任务返回数据
-	return function(data, done) {
+	return co.wrap(function(data, done) {
 		console.flag("SERVER:return-task", data);
 
 		var task_id = data.info.task_id;
 		var ctx = tasks.get(task_id);
 		if (!ctx) {
-			socket.msgError("return-task", {
-				task_id: task_id,
-				error: {
-					details: `找不到“${task_id}”所对应的 应用上下文（context）`
-				}
-			});
-			done();
+			Throw("ref", `找不到“${task_id}”所对应的 应用上下文（context）`);
 			return;
 		}
 		var time_tasks = ctx.time_tasks;
@@ -66,6 +60,11 @@ function install(socket, http_app, waterline_instance) {
 		}
 
 		done();
-	};
+	}, (err, data, done) => {
+		socket.msgError("return-task", {
+			task_id: task_id,
+		}, err);
+		done();
+	});
 
 };
