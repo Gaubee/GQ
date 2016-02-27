@@ -4,7 +4,6 @@ const IdSocketMap = require("./use-app.r.js").id_socket_map;
 function install(socket, http_app, waterline_instance) {
 
 	return co.wrap(function*(data, done) {
-		console.log(info)
 		const info = data.info || {};
 		const task_id = String.asString(info.task_id);
 
@@ -18,6 +17,7 @@ function install(socket, http_app, waterline_instance) {
 		if (!task_com) {
 			Throw("ref", "task_id has not reference to component instance.")
 		}
+		console.log(task_com)
 		const com_socket = IdSocketMap.get(task_com.com_socket_id);
 
 		info.task_id = task_com.safe_task_id;
@@ -29,7 +29,6 @@ function install(socket, http_app, waterline_instance) {
 
 		// 不管应用层响应如何，服务层这边都直接销毁这个连接。
 		// 否则让应用层控制服务层的销毁进度，本末倒置，会影响服务层的性能
-		IdSocketMap.delete(task_com.com_socket_id);
 		socket.com_task_and_safe_task_map.delete(task_id);
 
 		done();

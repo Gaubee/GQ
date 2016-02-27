@@ -11,8 +11,9 @@ exports.install = co.wrap(function*() {
 		try {
 			yield next;
 		} catch (e) {
-			console.error(e);
+			console.flag("UN CATCH", e);
 			this.status = 502;
+			this.body = Error.isError(e) ? e.message : e;
 		}
 		console.groupEnd(_g, this.path, "━━┫", Date.now() - _t, "ms");
 	});
@@ -39,7 +40,7 @@ exports.install = co.wrap(function*() {
 						}
 						var router = routers[method];
 						Object.keys(router).forEach(path => {
-							console.log(path);
+							console.flag(method.toUpperCase(), path);
 							router_register[method](prefix + path, router[path]);
 						});
 					});

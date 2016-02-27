@@ -1,6 +1,5 @@
 exports.install = install;
 
-console.log(require("./use-app.r.js"))
 const IdSocketMap = require("./use-app.r.js").id_socket_map;
 
 function install(socket, http_app, waterline_instance) {

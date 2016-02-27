@@ -48,6 +48,10 @@ module.exports = [{
 		owner: {
 			model: "application",
 			required: true,
+		},
+		socket_id: {
+			type: "string",
+			required: true
 		}
 	}
 }, ];

@@ -1,4 +1,3 @@
-var tasks = require("./router-register.r.js").tasks;
 var with_until_time_out_FACTORY = require("./router-register.r.js").with_until_time_out_FACTORY;
 
 exports.install = install;
@@ -6,9 +5,10 @@ exports.install = install;
 function install(socket, http_app, waterline_instance) {
 	return function(data, done) {
 		console.flag("SERVER:task-extended-timeout", data);
+		const tasks = socket.http_tasks;
 
-		var task_id = data.info.task_id;
-		var ctx = tasks.get(task_id);
+		const task_id = data.info.task_id;
+		const ctx = tasks.get(task_id);
 		if (!ctx) {
 			socket.msgError("return-task", {
 				task_id: task_id,

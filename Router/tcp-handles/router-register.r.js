@@ -1,8 +1,6 @@
 const Router = require("koa-router");
 const CoBody = require("co-body");
 const tcp = require("GQ-core/tcp");
-// 任务缓存
-const tasks = exports.tasks = new Map();
 
 // koa请求对象的缓存属性，避免内存泄漏
 const ctx_socket_wm = new WeakMap();
@@ -10,26 +8,18 @@ const ctx_socket_wm = new WeakMap();
 exports.install = install;
 
 function install(socket, http_app, waterline_instance) {
+	// 请求任务缓存
+	const tasks = socket.http_tasks = new Map();
+
 	const router = socket.router = Router();
 	const router_generation = socket.router_generation = router.routes();
 	const router_allowedmethods_generation = socket.router_allowedmethods_generation = router.allowedMethods();
 	http_app.use(router_generation);
 	http_app.use(router_allowedmethods_generation);
+
 	// 如果关闭了,socket注册的Router要全部注销掉
 	const _close_flag = console.flagHead("SOCKET CLOSE");
 	socket.on("close", co.wrap(function*() {
-		const app_name = socket.using_app.app_name;
-		const app_id = socket.using_app.id;
-		const _flag_name = "路由".inverse;
-
-		const _g = console.group(_close_flag, "开始注销应用 " + app_name + " 注册的" + _flag_name);
-		http_app.middleware.spliceRemove(router_generation);
-		http_app.middleware.spliceRemove(router_allowedmethods_generation);
-		router.stack.forEach(layer => console.log(`[${layer.methods}]${layer.path}`));
-		yield waterline_instance.collections.router_register.destroy({
-			owner: app_id
-		});
-		console.groupEnd(_g, _close_flag, "完成注销应用 " + app_name + " 注册的" + _flag_name);
 
 		console.group(_close_flag, "关闭正在执行的请求");
 		console.log("当前请求中的任务数：", tasks.size);
@@ -37,14 +27,38 @@ function install(socket, http_app, waterline_instance) {
 			console.log(`[${ctx.method}]${ctx.path}`);
 			ctx.destory(task_id);
 		});
+		tasks.clear();
+		socket.http_tasks = null;
 		console.groupEnd(_close_flag, "关闭正在执行的请求");
+
+		const _flag_content = `注销 [${socket.using_app.app_name}](${socket._id}) 注册的${"路由".inverse}`;
+
+		const _g = console.group(_close_flag, "开始" + _flag_content);
+		http_app.middleware.spliceRemove(router_generation);
+		http_app.middleware.spliceRemove(router_allowedmethods_generation);
+		router.stack.forEach(layer => console.log(`[${layer.methods}]${layer.path}`));
+		yield waterline_instance.collections.router_register.destroy({
+			socket_id: socket._id
+		});
+		socket.router = null;
+		socket.router_generation = null;
+		socket.router_allowedmethods_generation = null;
+		console.groupEnd(_g, _close_flag, "完成" + _flag_content);
+
 	}, err => {
 		console.flag(_close_flag, err);
 	}));
 
 
 	return co.wrap(function*(data, done) {
-		data.info.owner = socket.using_app;
+		const base_router_register = data.info;
+		if (!base_router_register) {
+			console.log(new TypeError("router_register_info is null."));
+			return done();
+		}
+
+		base_router_register.owner = socket.using_app;
+		base_router_register.socket_id = socket._id;
 
 		const router_register = yield waterline_instance.collections.router_register.create(data.info)
 
