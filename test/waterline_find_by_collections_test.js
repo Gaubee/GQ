@@ -11,9 +11,9 @@ co(function*() {
 	// console.log(me);
 
 	var my_app = yield collections.application.findOrCreate({
-		app_name: "QAQ"
+		app_name: "ShengYi"
 	}, {
-		app_name: "QAQ",
+		app_name: "ShengYi",
 		owner: me
 	});
 

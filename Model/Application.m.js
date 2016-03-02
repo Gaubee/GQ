@@ -16,7 +16,7 @@ module.exports = [{
 					"blog",
 				]
 				// 小写化
-				.indexOf(this.app_name = app_name.toLowerCase()) !== -1
+				.indexOf(this.app_name = app_name.toLowerCase()) === -1
 		}
 	},
 	attributes: {

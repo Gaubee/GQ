@@ -1,6 +1,6 @@
 {
   "name": "gq-server",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Gentle Queen是一个开发者协同开发应用的平台",
   "main": "index.js",
   "scripts": {
