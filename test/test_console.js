@@ -1,6 +1,6 @@
 /*console.group = console.groupEnd = function noop() {}
 const co = require("co");*/
-require("GQ-core")
+require("gq-core")
 const EventEmitter = require('events');
 const event = new EventEmitter();
 

@@ -1,6 +1,6 @@
 const Router = require("koa-router");
 const CoBody = require("co-body");
-const tcp = require("GQ-core/tcp");
+const tcp = require("gq-core/tcp");
 
 // koa请求对象的缓存属性，避免内存泄漏
 const ctx_socket_wm = new WeakMap();

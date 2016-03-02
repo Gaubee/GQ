@@ -1,4 +1,4 @@
-require("GQ-core");
+require("gq-core");
 
 co(function*() {
 	var p = {};

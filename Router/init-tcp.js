@@ -1,7 +1,7 @@
 /*
  * 提供给外部的基于TCP协议的注册功能
  */
-const tcp = require("GQ-core/tcp");
+const tcp = require("gq-core/tcp");
 const Router = require("koa-router");
 const CoBody = require("co-body");
 const PathObject = require('path-object')("/");

@@ -1,5 +1,5 @@
 //加载全局拓展
-require("GQ-core");
+require("gq-core");
 
 exports.run = run;
 

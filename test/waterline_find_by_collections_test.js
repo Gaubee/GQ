@@ -1,4 +1,4 @@
-require("GQ-core")
+require("gq-core")
 co(function*() {
 	var waterline_instance = yield require("../Model").install;
 	var collections = waterline_instance.collections;

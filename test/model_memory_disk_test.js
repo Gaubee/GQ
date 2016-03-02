@@ -1,5 +1,5 @@
-require("GQ-core");
-var tcp = require("GQ-core/tcp");
+require("gq-core");
+var tcp = require("gq-core/tcp");
 co(function*() {
 	var waterline_instance = yield require("../Model").install;
 	var collections = waterline_instance.collections;

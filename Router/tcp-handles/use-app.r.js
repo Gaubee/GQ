@@ -15,7 +15,7 @@ fs.lsAll(__dirname).forEach(file_path => {
 
 const socket_app_wm = new WeakMap();
 const socket_loginer_wm = new WeakMap();
-const comExtendHandle = require("GQ-core/tcp/extends-com");
+const comExtendHandle = require("gq-core/tcp/extends-com");
 
 function install(socket, http_app, waterline_instance) {
 
