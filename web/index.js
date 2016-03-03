@@ -2,7 +2,7 @@ const http_app = require("../Router").http_app;
 const Router = require("koa-router");
 const router_register = exports.router = Router();
 // 运行平台网站
-exports.install = co.wrap(function*() {
+exports.install = co.wrap(function*(waterline_instance, r) {
 	console.group("开始安装Web层服务");
 
 	http_app.app.use(function*(next) {
@@ -28,7 +28,7 @@ exports.install = co.wrap(function*() {
 			var routers = require(file_path);
 			if (routers) {
 				if (Function.isFunction(routers.install)) {
-					routers = routers.install(router_register);
+					routers = routers.install(waterline_instance, r);
 				}
 				if (Object.isObject(routers)) {
 

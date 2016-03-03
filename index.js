@@ -10,7 +10,7 @@ function run() {
 		//初始化路由层
 		var r = yield require("./Router").install(waterline_instance);
 		//安装GUI
-		require("./web").install(r);
+		require("./web").install(waterline_instance, r);
 
 		if (process.argv.indexOf("--test") !== -1) {
 			setTimeout(function() {

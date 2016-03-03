@@ -20,9 +20,9 @@ co(function*() {
 	// console.log(my_app);
 
 	var she = yield collections.user.findOrCreate({
-		user_name: "Bangeel",
+		user_name: "xuezi",
 	}, {
-		user_name: "Bangeel",
+		user_name: "xuezi",
 		password: "123456",
 	});
 	// console.log(she);
@@ -32,7 +32,7 @@ co(function*() {
 	// yield my_app.save()
 
 	var app = yield collections.application.findOne({
-		app_name:"QAQ",
+		app_name:"ShengYi",
 	}).populate("developers");
 	console.log(app)
 }).catch(e => {

@@ -5,4 +5,8 @@ exports.install = co.wrap(function*(waterline_instance) {
 		tcp_server.bridgeHttp(http_app.app, waterline_instance, done);
 	}
 	yield [bridge_http_tcp, http_app.install];
+	return {
+		http: http_app,
+		tcp: tcp_server,
+	}
 });
