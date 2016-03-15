@@ -8,7 +8,7 @@ var register_and_emit = co.wrap(function*(socket, next) {
 		});
 		console.log("register_info", register_info)
 
-		var res = yield $$.curl("http://127.0.0.1:4100/test_2?name=QAQ");
+		var res = yield $$.curl("http://127.0.0.1:4100/qaq/test_2?name=QAQ");
 		if (res === "QAQ") {
 			console.log("成功")
 			next()

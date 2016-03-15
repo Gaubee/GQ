@@ -3,7 +3,7 @@ exports.install = install;
 function install(socket, http_app, waterline_instance) {
 
 	// 接受任务返回数据
-	return co.wrap(function(data, done) {
+	return co.wrap(function*(data, done) {
 		console.flag("SERVER:return-task", data);
 
 		const tasks = socket.http_tasks;
@@ -60,7 +60,7 @@ function install(socket, http_app, waterline_instance) {
 		done();
 	}, (err, data, done) => {
 		socket.msgError("return-task", {
-			task_id: task_id,
+			task_id: data.info.task_id,
 		}, err);
 		done();
 	});

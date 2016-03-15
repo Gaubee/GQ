@@ -4,10 +4,10 @@ console.flag("TEST", "运行测试代码");
 
 var tasks = [
 	require("./application_test.js"),
-	require("./router_register_test.js"),
-	require("./emit_task_test.js"),
+	// require("./router_register_test.js"),
+	// require("./emit_task_test.js"),
 	// require("./task_timeout_test.js"),
-	// require("./redis_exec_test.js"),
+	require("./redis_exec_test.js"),
 	// require("./router_register_and_emit_test.js"),
 	// require("./multiRegisterRouter_test.js"),
 	// require("./component_test.js"),
@@ -53,7 +53,9 @@ function run_tasks(i) {
 			console.log("\n--------------------------")
 			console.flag("test success", "所有测试运行完成");
 			console.log("--------------------------")
-			process.exit(0)
+			setTimeout(function() {
+				// process.exit(0)
+			}, 1000);
 		}
 	});
 };

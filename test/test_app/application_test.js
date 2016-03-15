@@ -25,7 +25,7 @@ function run_test(socket, next) {
 
 		console.log(my_app);*/
 
-		var app = yield socket.useApp("Gaubee", "123456", "QAQ");
+		var app = yield socket.useApp("Gaubee", "123456", "qaq");
 		console.log(app);
 		next();
 	}).catch(e => {

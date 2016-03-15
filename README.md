@@ -4,16 +4,18 @@
 
 [ ] v1.0.0 ~ v2.0.0 接口的注册与协作
   - [x] v1.1.0 实现Component，基于组件化（Component）的Application建设
-  - [ ] v1.2.0 将Component分为System级别和Application两个级别
-  - [ ] v1.3.0 实现管理员对象，可接管System级别的对象
-  - [ ] v1.4.0 实现管理员管理Application对象
+  - [ ] ~v1.2.0 将Component分为System级别和Application两个级别~
+  - [ ] ~v1.3.0 实现管理员对象，可接管System级别的对象~
+  - [x] v1.4.0 实现管理员管理Application对象
   - [ ] v1.5.0 实现开发者对象，以及对应的审核流程。
   - [ ] v1.6.0 实现MAC-ID的校验流程，使得服务可以安全地挂载到平台上，MAC-ID可以多次使用，从而实现负载均衡。
   - [ ] v1.7.0 实现负载均衡的算法
   - [ ] v1.8.0 实现接口权重分配，从而实现本地替代线上接口、线上接口暂停使用等功能。
   - [ ] v1.9.0 使用pipe实现惰性传输，提升req-body、Component-bigData等对象的传输效率
 [ ] v2.0.0 ~ v3.0.0 应用平台的构建
+  - [ ] v2.0.0 实现开发者登录以及基础的应用管理
   - [ ] v2.1.0 实现Router版本对比与搜索
+  - [ ] v2.2.0 实现插件的开发
 
 
 ## 1. Application
