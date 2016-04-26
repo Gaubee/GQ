@@ -23,14 +23,6 @@
 					success.apply(this, arguments);
 					break;
 				case "json":
-					// try {
-					// 	var result = $.parseJSON(data.toString);
-					// } catch (e) {
-					// 	data.error = e;
-					// 	error.call(this, "JSON Parse Error" /*解析错误*/ , jqXHR);
-					// 	return;
-					// }
-					// data.result = result;
 					arguments[0] = data.info;
 					success.apply(this, arguments);
 					break;
@@ -49,10 +41,6 @@
 					error.call(this, result.errorMsg, result, jqXHR, data)
 					break;
 				default: //JSON without error
-					// try {
-					// 	result = $.parseJSON(data.toString);
-					// } catch (e) {}
-					// data.result = result;
 					arguments[0] = data.info;
 					success.apply(this, arguments);
 					break;
@@ -62,99 +50,179 @@
 
 	`${ return toBrowserExpore("dataFormat", "dataFormat") }`
 
+
 	/*
-	 * 基于jQ的跨域ajax工具函数
+	 * 解析Object成urlencoded，进行POST发送
 	 */
-	//进度条的注入
-	//is onprogress supported by browser?
-	var hasOnProgress = ("onprogress" in $.ajaxSettings.xhr());
+	var stringifyPrimitive = function(v) {
+		if (typeof v === 'string')
+			return v;
+		if (typeof v === 'number' && isFinite(v))
+			return '' + v;
+		if (typeof v === 'boolean')
+			return v ? 'true' : 'false';
+		return '';
+	};
 
-	//If not supported, do nothing
-	if (hasOnProgress) {
-		//patch ajax settings to call a progress callback
-		$.ajaxSettings.xhr_bak = $.ajaxSettings.xhr;
-		$.ajaxSettings.xhr = function() {
-			var xhr = $.ajaxSettings.xhr_bak();
-			var self = this;
-			if (this.progress) {
-				if (xhr instanceof window.XMLHttpRequest) {
-					xhr.addEventListener('progress', this.progress, false);
-				}
+	function object_to_urlencoded(obj, sep, eq, options) {
+		sep = sep || '&';
+		eq = eq || '=';
 
-				if (xhr.upload) {
-					xhr.upload.addEventListener('progress', this.progress, false);
+		var encode = encodeURIComponent;
+		if (options && typeof options.encodeURIComponent === 'function') {
+			encode = options.encodeURIComponent;
+		}
+
+		if (obj !== null && typeof obj === 'object') {
+			var keys = Object.keys(obj);
+			var len = keys.length;
+			var flast = len - 1;
+			var fields = '';
+			for (var i = 0; i < len; ++i) {
+				var k = keys[i];
+				var v = obj[k];
+				var ks = encode(stringifyPrimitive(k)) + eq;
+
+				if (Array.isArray(v)) {
+					var vlen = v.length;
+					var vlast = vlen - 1;
+					for (var j = 0; j < vlen; ++j) {
+						fields += ks + encode(stringifyPrimitive(v[j]));
+						if (j < vlast)
+							fields += sep;
+					}
+					if (vlen && i < flast)
+						fields += sep;
+				} else {
+					fields += ks + encode(stringifyPrimitive(v));
+					if (i < flast)
+						fields += sep;
 				}
 			}
-			var yield_id = 0;
-			xhr.addEventListener("readystatechange", function() {
-				// console.log(xhr.responseText);
-				if (xhr.responseText) {
-					var yield_info = xhr.responseText.split(/\[YIELD\-URL\]\((.+?)\)/);
-					if (yield_info.length > yield_id * 2 + 1) {
-						if (!self.dataFilter) {
-							self.dataFilter = function(data) {
-								var res_text = data.split(/\[YIELD\-URL\]\((.+?)\)/).pop();
-								try {
-									return JSON.parse(res_text)
-								} catch (e) {
-									return {
-										type: "error",
-										info: {
-											errorMsg: e.message,
-											errorObj: e
-										}
+			return fields;
+		}
+		return '';
+	};
+	/*
+	 * 生成XHR并发送
+	 */
+	function sendXHR(options) {
+		var xhr = new(window.XMLHttpRequest || ActiveXObject)("Microsoft.XMLHTTP");
+		//进度条功能
+		if (options.progress) {
+			if (xhr instanceof window.XMLHttpRequest) {
+				xhr.addEventListener('progress', options.progress, false);
+			}
+
+			if (xhr.upload) {
+				xhr.upload.addEventListener('progress', options.progress, false);
+			}
+		}
+		var yield_id = 0;
+		//QG框架一条请求的通讯
+		xhr.addEventListener("readystatechange", function() {
+			if (xhr.responseText) {
+				var yield_info = xhr.responseText.split(/\[YIELD\-URL\]\((.+?)\)/);
+				if (yield_info.length > yield_id * 2 + 1) {
+					console.log(xhr.responseText)
+					if (!self.dataFilter) {
+						self.dataFilter = function(data) {
+							var res_text = data.split(/\[YIELD\-URL\]\((.+?)\)/).pop();
+							try {
+								return JSON.parse(res_text)
+							} catch (e) {
+								return {
+									type: "error",
+									info: {
+										errorMsg: e.message,
+										errorObj: e
 									}
 								}
 							}
 						}
-						var yield_url = yield_info[2 * yield_id + 1];
-						var yield_json = yield_info[2 * yield_id];
-						yield_id += 1;
-						try {
-							var yield_data = JSON.parse(yield_json);
-							var send_yield_task = function(err, value) {
-								console.log("YIELD SEND:", yield_url, res);
+					}
+					var yield_url = yield_info[2 * yield_id + 1];
+					var yield_json = yield_info[2 * yield_id];
+					yield_id += 1;
+					try {
+						var yield_data = JSON.parse(yield_json);
+						var send_yield_task = function(err, value) {
+							console.log("YIELD SEND:", yield_url, res);
 
-								$.ajax({
-									method: "POST",
-									url: yield_url,
-									xhrFields: {
-										withCredentials: true
-									},
-									data: {
-										type: err ? "error" : "success",
-										value: err || value
-									},
-									complete: function(res) {
-										console.log("YIELD OK:", yield_url, arguments)
-									}
-								});
-							};
-							var yieldHandles = self.yieldHandles;
-							switch (yield_data.handle) {
-								case "prompt":
-									if (yieldHandles[yield_data.handle] instanceof Function) {
-										yieldHandles[yield_data.handle](yield_data.title, yield_data.default_value, send_yield_task);
+							sendXHR({
+								method: "POST",
+								url: yield_url,
+								xhrFields: {
+									withCredentials: true
+								},
+								contentType: "application/x-www-form-urlencoded",
+								data: {
+									type: err ? "error" : "success",
+									value: err || value
+								},
+								complete: function(resText) {
+									if (resText === "Success") {
+										console.log("数据发送成功", yield_url, arguments)
 									} else {
-										var res = window.prompt(yield_data.title, yield_data.default_value);
-										send_yield_task(null, res)
+										console.error("数据发送失败", yield_url, arguments)
 									}
-									break;
-								default:
-									if (yieldHandles[yield_data.handle] instanceof Function) {
-										yieldHandles[yield_data.handle](yield_data, send_yield_task);
-									}
-							}
-
-						} catch (e) {
-							self.error("yield parse error", e, xhr)
+								}
+							});
+						};
+						var yieldHandles = options.yieldHandles || {};
+						switch (yield_data.handle) {
+							case "prompt":
+								if (yieldHandles.hasOwnProperty(yield_data.handle) && yieldHandles[yield_data.handle] instanceof Function) {
+									yieldHandles[yield_data.handle](yield_data.title, yield_data.default_value, send_yield_task);
+								} else {
+									var res = window.prompt(yield_data.title, yield_data.default_value);
+									send_yield_task(null, res)
+								}
+								break;
+							default:
+								if (yieldHandles[yield_data.handle] instanceof Function) {
+									yieldHandles[yield_data.handle](yield_data, send_yield_task);
+								} else {
+									console.error("No Found yield Handle: [" + yield_data.handle + "]")
+								}
 						}
+
+					} catch (e) {
+						options.error("yield parse error", e, xhr)
 					}
 				}
-			});
-			return xhr;
-		};
-	}
+			}
+		});
+		xhr.addEventListener("readystatechange", function() {
+			if (xhr.readyState === 4 && yield_id === 0) {
+				if (xhr.status === 200) {
+					options.success instanceof Function &&
+						options.success(xhr.responseText, xhr.status, xhr)
+				} else {
+					options.error instanceof Function &&
+						options.error(xhr)
+				}
+				options.complete instanceof Function && options.complete(xhr.responseText, xhr.status, xhr)
+			}
+		});
+
+
+		xhr.open((options.method || "get").toUpperCase(), options.url, true);
+		var contentType = options.contentType || "";
+		contentType && xhr.setRequestHeader("Content-type", contentType);
+		if (contentType.indexOf("urlencoded") !== -1) {
+			xhr.send(options.data && object_to_urlencoded(options.data));
+		} else if (contentType.indexOf("json") !== -1) {
+			xhr.send(options.data && JSON.stringify(options.data));
+		} else {
+			xhr.send(options.data);
+		}
+		return xhr;
+	};
+
+	/*
+	 * 基于跨域ajax工具函数
+	 */
 
 	var ajax = {
 		_addCookiesInUrl: function(url) {
@@ -166,15 +234,14 @@
 			// url += "cors_cookie="+encodeURI(document.cookie);
 			return url;
 		},
-		_ajax: function(url, type, data, success, error, net_error) {
-			var jqxhr = $.ajax({
+		_ajax: function(url, method, data, success, error, net_error) {
+			var options = {
 				url: url,
-				type: type,
+				method: method,
 				contentType: "application/x-www-form-urlencoded",
 				data: data,
 				success: dataFormat(success, error),
 				error: net_error || function(xhr) {
-
 					try {
 						if (xhr.status === 502) {
 							var data = xhr.responseJSON;
@@ -187,7 +254,7 @@
 					}
 				},
 				progress: function(event) {
-					jqxhr.emit("progress", event);
+					_xhr.emit("progress", event);
 					if (event.loaded == event.total) {
 						//释放内存
 						eventManager.clear("progress" + _event_prefix);
@@ -195,21 +262,25 @@
 				},
 				xhrFields: {
 					withCredentials: true
+				},
+				yieldHandles: {
+
 				}
-			});
+			};
+			var _xhr = sendXHR(options);
 			var _event_prefix = Math.random();
 			//事件机制，目前支持progress
-			jqxhr.on = function(eventName) {
+			_xhr.on = function(eventName) {
 				eventName += _event_prefix;
 				arguments[0] = eventName;
 				return eventManager.on.apply(eventManager, arguments);
 			};
-			jqxhr.emit = function(eventName) {
+			_xhr.emit = function(eventName) {
 				eventName += _event_prefix;
 				arguments[0] = eventName;
 				return eventManager.fire.apply(eventManager, arguments);
 			};
-			return jqxhr;
+			return _xhr;
 		},
 		get: function(url, data, success, error, net_error) {
 			url = ajax._addCookiesInUrl(url);
@@ -371,9 +442,11 @@
 			_top = _current_top;
 			eventManager.emit(_event_name, e)
 		});
-		define("listenScroll", window.listenScroll = function listenScroll(foo) {
+		window.listenScroll = function listenScroll(foo) {
 			eventManager.on(_event_name, foo);
-		});
+		};
+
+		`${ return toBrowserExpore("listenScroll", "listenScroll") }`
 	});
 
 }());

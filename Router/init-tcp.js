@@ -50,7 +50,7 @@ function bridgeHttp(http_app, waterline_instance) {
 		});
 
 		function run_promise(pre_value) {
-			new Promise(function(resolve, reject) {
+			return Promise.try(function(resolve, reject) {
 				var yield_data = {
 					handle: "prompt",
 					title: (pre_value ? ("你输入了：" + pre_value + ", ") : "") +
@@ -70,15 +70,15 @@ function bridgeHttp(http_app, waterline_instance) {
 					self.res.end(JSON.stringify({
 						type: "string",
 						info: "END!!"
-					})+"GG");
+					}) + "GG");
 					return
 				}
-				run_promise(value);
+				return run_promise(value);
 			}).catch(function(error) {
 				console.log("收到错误：", error);
 			})
 		};
-		run_promise();
+		yield run_promise();
 	});
 	api_router.post("/yield/:yield_id", function*(next) {
 		var yield_id = this.params.yield_id;
@@ -87,6 +87,9 @@ function bridgeHttp(http_app, waterline_instance) {
 		if (p) {
 			var form = yield CoBody(this, {
 				limit: "20MB"
+			});
+			this.req.on("data",function (chunk) {
+				console.log(chunk.toString())
 			});
 			if (form.type === "error") {
 				p.reject(form.value)

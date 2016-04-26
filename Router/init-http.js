@@ -1,6 +1,14 @@
-var koa = require('koa');
-var Session = require('koa-session');
-var app = koa();
+const koa = require('koa');
+const Session = require('koa-session');
+const app = koa();
+// 时间统计
+app.use(function*(next) {
+	const _start_time = new Date;
+	const _g = console.group(_start_time.format("mm-dd HH:MM:SS"))
+	yield next;
+	const _end_time = new Date;
+	console.groupEnd(_g, _end_time - _start_time, "ms")
+});
 // Session
 app.keys = ['QAQ'];
 app.use(Session(app));
