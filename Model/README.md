@@ -1,39 +1,12 @@
 # Model层
 
-## 用法
+经过权衡，我确定要放弃在QG中集成Model服务。
 
-### 1. 定义
+QG作为一个应用平台，为了确保稳定与安全，如果开放数据服务，那么可能导致要花费大量开发者的精力与时间以及服务器的内存CPU去提供数据服务。
 
+如果要实现，那么将面临以下的重点难点：
+* 多样化的数据库（Redis、Mongodb、MySQL、PostgerSQL等）
+* 数据库沙盒（确保多应用之间的数据库不会互相影响或者泄漏）
+* 分布式数据库（确保多应用数据库的稳定性）
 
-## Redis相关的接口
-> Redis-DOC [http://redis.cn/] [https://github.com/NodeRedis/node_redis]
-
-```js
-// Client -> Server
-{
-	type: "redis-exec",
-	info: {
-		task_id: "**HASH**",
-		handle: "[Redis command]"
-		args:[/* Redis args. */]
-	}
-}
-// Server -> Client
-{
-	type: "success",
-	from: "redis-return",
-	info:{
-		task_id: "**HASH**",
-		returns: Object
-	}
-}
-// Or
-{
-	type: "error",
-	from: "redis-return",
-	info:{
-		task_id: "**HASH**",
-		returns: Error
-	}
-}
-```
+综合以上几点，如果把Model放在GQ层面实现无疑是会导致大量的稳定性、安全性问题。所以权衡之下，将Model层取消，应用的Model使用Component实现。如此一来只需要Model-Component稳定，整个Application即可正常提供数据服务。我可以将精力放在Component层的优化上，后续会提供管道等功能提高数据传输效率。

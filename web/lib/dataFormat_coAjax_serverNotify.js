@@ -195,9 +195,15 @@
 		});
 		xhr.addEventListener("readystatechange", function() {
 			if (xhr.readyState === 4 && yield_id === 0) {
-				if (xhr.status === 200) {
-					options.success instanceof Function &&
-						options.success(xhr.responseText, xhr.status, xhr)
+				if (xhr.status === 200 && options.success instanceof Function) {
+					try {
+						var data = JSON.parse(xhr.responseText);
+					} catch (e) {
+						console.error("JSON PARSE ERROR:", e);
+					}
+				}
+				if (data) {
+					options.success(data, xhr.status, xhr)
 				} else {
 					options.error instanceof Function &&
 						options.error(xhr)

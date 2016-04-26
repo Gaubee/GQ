@@ -111,11 +111,13 @@
 				};
 				var className = type_info.join(" ");
 			}
-			result = $.Notify({
-				style: css_style,
-				className: className,
-				content: alert_str,
-				timeout: time
+			require(["jQuery.notify"], function() {
+				result = $.Notify({
+					style: css_style,
+					className: className,
+					content: alert_str,
+					timeout: time
+				});
 			});
 		}
 		return result;

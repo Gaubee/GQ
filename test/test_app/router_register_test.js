@@ -23,15 +23,20 @@ var register_info = exports.register_info = {
 exports.run = run_test;
 
 function run_test(socket, next) {
-	socket.msgInfo("router-register", register_info);
-	socket.onMsgSuccess("router-register", function(data, done) {
-		console.log("路由注册成功");
-		next(socket);
-		done();
-	});
-	socket.onMsgError("router-register", function(data, done) {
-		console.error("路由注册失败", data.info);
-		next(socket);
-		done();
-	});
+	try {
+
+		socket.msgInfo("router-register", register_info);
+		socket.onMsgSuccess("router-register", function(data, done) {
+			console.log("路由注册成功");
+			next(socket);
+			done();
+		});
+		socket.onMsgError("router-register", function(data, done) {
+			console.error("路由注册失败", data.info);
+			next(socket);
+			done();
+		});
+	} catch (e) {
+		console.log(e)
+	}
 };

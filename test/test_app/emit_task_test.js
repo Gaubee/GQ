@@ -1,4 +1,3 @@
-var co = require("co");
 var register_info = require("./router_register_test").register_info;
 
 exports.run = install_and_run_test;
@@ -6,7 +5,7 @@ exports.run = install_and_run_test;
 function install_and_run_test(socket, next) {
 	// var done
 	socket.onMsgInfo("emit-task", function(data, done) {
-		console.flag("CLIENT:emit-task", data);
+		console.flag("CLIENT:emit-task", data.info.task_id);
 		// 发送任务所需的数据
 		task_handle(socket, data);
 		done();
@@ -19,22 +18,20 @@ function install_and_run_test(socket, next) {
 		});
 	});
 	socket.onMsgError("return-task", function(data, done) {
-		console.error("路由触发失败", data.info);
+		console.error("路由触发失败", data.info.task_id, data.info.task_id.error);
 		done();
 	});
-	run_test();
+	run_test(socket.using_app.app_name).catch(e => console.error(e.stack));
 };
+
+var run_test = co.wrap(function*(app_name) {
+	var _url = "http://127.0.0.1:4100/" + app_name + register_info.path;
+	var res = yield $$.curl(_url);
+	console.flag("curl", res, "\n\t\t----> " + _url);
+	return res;
+});
 
 exports.run_test = run_test;
-
-function run_test(cb) {
-	FiberRun(function() {
-		var _url = "http://127.0.0.1:4100" + register_info.path;
-		var res = curl(_url);
-		console.flag("curl", res, "\n\t\t----> " + _url);
-		cb && cb(null, res);
-	});
-};
 
 
 exports.task_handle_config = {

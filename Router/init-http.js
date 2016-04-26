@@ -1,14 +1,6 @@
 const koa = require('koa');
 const Session = require('koa-session');
 const app = koa();
-// 时间统计
-app.use(function*(next) {
-	const _start_time = new Date;
-	const _g = console.group(_start_time.format("mm-dd HH:MM:SS"))
-	yield next;
-	const _end_time = new Date;
-	console.groupEnd(_g, _end_time - _start_time, "ms")
-});
 // Session
 app.keys = ['QAQ'];
 app.use(Session(app));
@@ -21,9 +13,13 @@ app.use(function*(next) {
 	this.set("Access-Control-Allow-Headers", "X-PINGOTHER, Set-Cookie, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version");
 
 	yield next;
-})
-
-app.listen(4100, function() {
-	console.flag("init", "HTTP基础服务已经启动", app)
 });
-module.exports = app;
+
+exports.app = app;
+exports.install = function install(cb) {
+	var port = 4100;
+	app.listen(port, function() {
+		console.flag("init", "HTTP基础服务已经启动", port, app)
+		Function.isFunction(cb) && cb(null, app);
+	});
+};
