@@ -1,10 +1,9 @@
+{{setTitle "接口快速查询"}}
 <link href='http://fonts.useso.com/css?family=Droid Sans Mono:400' rel='stylesheet' type='text/css'>
-<label for="app-root">
-	<span>接口源：</span>
-	<input id="app-root" value="{{api_root}}" bind-input="{{'api_root'}}"></input>
-</label>
+<link href="http://fonts.useso.com/css?family=Material+Icons"
+      rel="stylesheet">
 <div class="controller-bar">
-	<div class="tip toggle_details hint hint--left" data-hint="显示/隐藏所有接口详情" event-click="{{'$API.$Event.toggle_all_details'}}"><span class="icon-eye"></span></div>
+	<div class="tip toggle_details hint hint--left" data-hint="显示/隐藏所有接口详情" event-click="{{'$API.$Event.toggle_all_details'}}"><span class="material-icons">visibility</span></div>
 </div>
 <xmp type="template" name="apis-object-attrs">
 	<ul>
@@ -17,26 +16,30 @@
 	{{/each}}
 	</ul>
 </xmp>
-{{#each $API.$Data}}
 <div class="apis" style="padding:0 4em; background-color: #242833;">
-	<h2>接口集：{{base_info.initKey}} </h2>
+<label for="app-root">
+	<span>接口源：</span>
+	<input id="app-root" value="{{api_root}}" bind-input="{{'api_root'}}"></input>
+</label>
+{{#each $API.$Data}}
+	<h2>接口集：{{app.app_name}} </h2>
 		<div class="input">
 			<input type="search" placeholder="快速搜索接口" bind-input="{{'search_text'}}" value="{{search_text}}" event-input="{{'$Top.$API.$Event.search_api'}}">
 		</div>
-	<p>开发者：{{base_info.info.author}}； 版本号：{{base_info.info.version}}</p>
+	<p>开发者：{{app.owner.user_name}}； 版本号：{{base_info.info.version||无}}; URL前缀：{{$Top.api_root}}/{{app.app_name}}</p>
 	<ul>
 	{{#each apis}}
 		<li>
 			<div style="padding:1em 0;">
 				<h3>
-					<span style="cursor: pointer;" class="copy-able-url hint hint--bottom" data-hint="点击复制接口">
+					<span style="cursor: pointer;" class="hint hint--bottom" data-hint="点击复制接口">
 						<span class="copy-able-url hint hint--top" data-hint="{{obj_path||$Top.$API.$Help.path_to_obj(path)}}">
-							<i class="icon-link"></i>
+							<i class="material-icons">link</i>
 						</span>
 					</span>
 					<b style="text-transform: uppercase;">[{{HTML method}}] </b>
 					<span style="cursor: pointer;" event-click="{{'$Top.$API.$Event.toggle_details'}}"> {{HTML path}} </span>
-					<span style="padding-left: 2em; font-weight: 200;">{{HTML doc.des}}</span>
+					<span style="padding-left: 2em; font-weight: 200;">{{HTML des}}</span>
 				</h3>
 				{{#> "apis-doc-details","$This",doc.details||doc.params.length||doc.returns.length}}
 				<xmp type="template" name="apis-doc-details">
@@ -78,9 +81,9 @@
 		</li>
 	{{/each}}
 	</ul>
-</div>
 {{/each}}
-<div class="icons">
+</div>
+<!-- <div class="icons">
 	<br>
 	<center><h1>图标库<i>（点击复制）</i></h1></center>
 	<br>
@@ -88,11 +91,7 @@
 	<span data-hint="icon-{{$This}}" class="copy-able-icon hint hint--top"><i class="icon-{{$This}}"></i></span>
 	{{/each}}
 </div>
-
-<br>
-<br>
-<br>
-<br>
+ -->
 <style>
 	#jSouperApp .apis{
 		font-family: 'Droid Sans Mono',  Arial, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif!important;
@@ -147,5 +146,9 @@
 		font-size: 1.5em;
 		cursor: pointer;
 		padding:0.1em 0.4em;
+	}
+	.material-icons{
+		vertical-align: middle;
+	    line-height: inherit;
 	}
 </style>

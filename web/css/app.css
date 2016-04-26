@@ -19,6 +19,10 @@ html {
     font-family: 'Roboto', Arial, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
     font-weight: normal;
 }
+body{
+    padding: 0;
+    margin: 0;
+}
 
 /*
  * Remove text-shadow in selection highlight:

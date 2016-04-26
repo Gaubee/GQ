@@ -3,9 +3,9 @@ window.btoa = function() {
 	console.log("QAQ-btoa-BASE64", arguments)
 	_btoa.apply(window, arguments);
 };
-App.set("api_root", QueryString().get('api_root')||location.origin);
+App.set("api_root", QueryString().get('api_root') || location.origin);
 require(["r_css!/css/app.css"])
-require(["clipboard", "r_text!/css/fontello.css", "r_css!hint-css" /*, "es6!/app-pages/js/pc/apis.ts?compile_to=.js"*/
+require(["clipboard", "r_css!hint-css" /*, "es6!/app-pages/js/pc/apis.ts?compile_to=.js"*/
 	// ,"/app-pages/js/pc/apis.bb?compile_to=.js&debug=true"
 ], function(Clipboard, icon_css_text) {
 
