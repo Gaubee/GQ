@@ -31,6 +31,13 @@ function install(socket, http_app, waterline_instance) {
 		if (return_data.response_type) {
 			ctx.type = return_data.response_type;
 		}
+		//------------ header
+		console.flag('header',return_data.header);
+		if (return_data.header) {
+			for (var header_key in return_data.header) {
+				ctx.set(header_key, return_data.header[header_key]);
+			}
+		}
 		//------------ body
 		if (return_data.body) {
 			// console.log("ctx.body",ctx.body,typeof ctx.body)

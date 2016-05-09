@@ -13,7 +13,7 @@
 var _isMobile = false; // 永久不跳转
 
 requireConfig = appConfig = {
-	api_base_url: "http://127.0.0.1:4100/",
+	// api_base_url: "http://127.0.0.1:4100/",
 	img_server_url: "http://7xpxgs.com1.z0.glb.clouddn.com/",
 	// baseUrl: "./",
 	waitSeconds: 0,

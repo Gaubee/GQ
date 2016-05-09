@@ -93,6 +93,7 @@ require(["clipboard", "r_css!hint-css" /*, "es6!/app-pages/js/pc/apis.ts?compile
 	};
 	App.set("$API.$Event.search_api", function(e, vm) {
 		var source_apis = vm.get("source_apis");
+		var app = vm.get("app");
 		if (!source_apis) { // 初始化
 			source_apis = vm.get("apis");
 			vm.set("source_apis", source_apis);
@@ -104,7 +105,7 @@ require(["clipboard", "r_css!hint-css" /*, "es6!/app-pages/js/pc/apis.ts?compile
 			var needle = search_text.replace(/\s/g, '');
 			var filter_api = [];
 			source_apis.forEach(function(api) {
-				var text = "[" + api.method + "]" + api.path + " " + (api.obj_path || (api.obj_path = path_to_obj(api.path))).replace("public_api.", "") + " " + (api.doc && api.doc.des || "");
+				var text = "[" + api.method + "]" + api.path + " " + (api.obj_path || (api.obj_path = path_to_obj(api.path, app.app_name))).replace("public_api.", "") + " " + (api.doc && api.doc.des || "");
 				var weight = Mul_LnCS_Length(text, keys)
 				if (weight >= 0) {
 					// console.log(weight, text);
@@ -157,13 +158,13 @@ require(["clipboard", "r_css!hint-css" /*, "es6!/app-pages/js/pc/apis.ts?compile
 		App.model.touchOff("$API.$Data");
 	});
 	/* 接口的复制 */
-	function path_to_obj(path) {
+	function path_to_obj(path, app_name) {
 		var formats = [];
 		var res = path.replace(/:([^:\/]+)/g, function(matchStr, key) {
 			formats.push(key)
 			return "$" + key;
 		});
-		res = "public_api" + res.replace(/\//g, ".");
+		res = "public_api." + app_name + res.replace(/\//g, ".");
 		if (formats.length) {
 			res += ".format({\n" + formats.map(function(key) {
 				return key + ":" + key

@@ -1,4 +1,5 @@
 exports.install = install;
+const PathObject = require("path-object")();
 
 function install(waterline_instance, r) {
 	const connPool = r.tcp.connPool;
@@ -7,7 +8,6 @@ function install(waterline_instance, r) {
 		prefix: "/apis",
 		get: {
 			"/all": function*(next) {
-				console.log(connPool.size);
 				var res = [];
 				yield connPool.map(co.wrap(function*(socoon) {
 					if (socoon.using_app) {
@@ -36,13 +36,14 @@ function install(waterline_instance, r) {
 					if (!socoon.using_app) {
 						return;
 					}
+					console.log(socoon.using_app)
 					var apis = yield waterline_instance.collections.router_register.find({
 						owner: socoon.using_app.id
 					});
 					apis.forEach(function(api) {
-						var path_fragments = api.path.split("/");
-						var path_for_object_s_key = api.path.replace(/:/g, "$");
-						var formatable_path = prefix + api.path.replace(/:([^:\/]+)/g, "${$1}");
+						const path = "/" + socoon.using_app.app_name + api.path;
+						var path_for_object_s_key = path.replace(/:/g, "$");
+						var formatable_path = prefix + path.replace(/:([^:\/]+)/g, "${$1}");
 						res.set(path_for_object_s_key, formatable_path);
 					});
 				}));

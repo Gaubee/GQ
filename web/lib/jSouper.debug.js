@@ -1,5 +1,27 @@
-!(function jSouper(global) {
+// Avoid `console` errors in browsers that lack a console.
+(function() {
+    var method;
+    var noop = function () {};
+    var methods = [
+        'assert', 'clear', 'count', 'debug', 'dir', 'dirxml', 'error',
+        'exception', 'group', 'groupCollapsed', 'groupEnd', 'info', 'log',
+        'markTimeline', 'profile', 'profileEnd', 'table', 'time', 'timeEnd',
+        'timeStamp', 'trace', 'warn'
+    ];
+    var length = methods.length;
+    var console = (window.console = window.console || {});
 
+    while (length--) {
+        method = methods[length];
+
+        // Only stub undefined methods.
+        if (!console[method]) {
+            console[method] = noop;
+        }
+    }
+}());
+
+// Place any jQuery/helper plugins in here.
 'use strict';
 //在压缩编译时，global会由外部引入，这里var声明为了在调试模式中能正常使用
 var global = global || this;
@@ -6830,6 +6852,3 @@ if (typeof module === "object" && module && typeof module.exports === "object") 
     //Model.extend
     _modelExtend("Observer", Observer)
 }())
-
-
-}(this));

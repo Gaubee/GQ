@@ -22,5 +22,5 @@ jhs.on("status:404", co.wrap(function*(file_paths, res_pathname, type, pathname,
 	}
 }));
 jhs.listen(8142, function() {
-	console.log("ok")
+	console.log("8142")
 });

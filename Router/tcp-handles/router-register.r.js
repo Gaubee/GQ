@@ -115,7 +115,7 @@ function install(socket, http_app, waterline_instance) {
 						emit_with[i] = ctx.params;
 						break;
 					case "form":
-						emit_with[i] = yield CoBody(ctx, {
+						emit_with[i] = router_register.method === "get" ? {} : yield CoBody(ctx, {
 							limit: "20MB"
 						});
 						break;
@@ -132,7 +132,7 @@ function install(socket, http_app, waterline_instance) {
 				method: router_register.method,
 				task_id: task_id,
 				time_out: router_register.time_out, // 单位是毫秒
-				emit_with: emit_with
+				emit_with: emit_with,
 			});
 
 			return yield with_until_time_out_FACTORY(ctx);
